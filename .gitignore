@@ -1,0 +1,5 @@
+sdkconfig
+
+build/
+Borradores/
+.vscode/
