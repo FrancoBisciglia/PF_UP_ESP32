@@ -1,7 +1,8 @@
 /**
- * @file MEF_ALGORITMO_CONTROL_TEMP_SOLUCION.c
+ * @file MEF_ALGORITMO_CONTROL_VAR_AMB.c
  * @author Franco Bisciglia, David Kündinger
- * @brief   Implementación de las diferentes MEF's del algoritmo de control de la temperatura de la solución.
+ * @brief   Implementación de las diferentes MEF's del algoritmo de control de las variables ambientales del sistema, 
+ *          que son la temperatura, humedad relativa y nivel de CO2 ambiente.
  * @version 0.1
  * @date 2023-01-16
  *
@@ -20,87 +21,119 @@
 #include "freertos/task.h"
 
 #include "MQTT_PUBL_SUSCR.h"
-#include "DS18B20_SENSOR.h"
+#include "DHT11_SENSOR.h"
+#include "CO2_SENSOR.h"
 #include "MCP23008.h"
-#include "AUXILIARES_ALGORITMO_CONTROL_TEMP_SOLUCION.h"
-#include "MEF_ALGORITMO_CONTROL_TEMP_SOLUCION.h"
+#include "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.h"
+#include "MEF_ALGORITMO_CONTROL_VAR_AMB.h"
 
 //==================================| MACROS AND TYPDEF |==================================//
 
 //==================================| INTERNAL DATA DEFINITION |==================================//
 
 /* Tag para imprimir información en el LOG. */
-static const char *mef_temp_soluc_tag = "MEF_CONTROL_TEMP_SOLUCION";
+static const char *mef_var_amb_tag = "MEF_CONTROL_VAR_AMB";
 
-/* Task Handle de la tarea del algoritmo de control de la temperatura de la solución. */
-static TaskHandle_t xMefTempSolucAlgoritmoControlTaskHandle = NULL;
+/* Task Handle de la tarea del algoritmo de control de las variables ambientales del sistema. */
+static TaskHandle_t xMefVarAmbAlgoritmoControlTaskHandle = NULL;
 
 /* Handle del cliente MQTT. */
-static esp_mqtt_client_handle_t MefTempSolucClienteMQTT = NULL;
+static esp_mqtt_client_handle_t MefVarAmbClienteMQTT = NULL;
 
-/* Variable donde se guarda el valor de la temperatura de la solución sensada en °C. */
-static DS18B20_sensor_temp_t mef_temp_soluc_temp = 0;
-/* Límite inferior del rango considerado como correcto en el algoritmo de control de la temperatura de la solución en °C. */
-static DS18B20_sensor_temp_t mef_temp_soluc_limite_inferior_temp_soluc = 18;
-/* Límite superior del rango considerado como correcto en el algoritmo de control de la temperatura de la solución en °C. */
-static DS18B20_sensor_temp_t mef_temp_soluc_limite_superior_temp_soluc = 28;
-/* Ancho de la ventana de histeresis posicionada alrededor de los límites del rango considerado como correcto, en °C. */
-static DS18B20_sensor_temp_t mef_temp_soluc_ancho_ventana_hist = 1;
+/* Variable donde se guarda el valor de la temperatura ambiente sensada en °C. */
+static DHT11_sensor_temp_t mef_var_amb_temp = 0;
+/* Límite inferior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
+static DHT11_sensor_temp_t mef_var_amb_limite_inferior_temp = 18;
+/* Límite superior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
+static DHT11_sensor_temp_t mef_var_amb_limite_superior_temp = 28;
+/* Ancho de la ventana de histeresis de temperatura ambiente, posicionada alrededor de los límites del rango considerado como correcto, en °C. */
+static DHT11_sensor_temp_t mef_var_amb_ancho_ventana_hist_temp = 1;
 /* Delta de temperatura considerado, en °C. */
-static DS18B20_sensor_temp_t mef_temp_soluc_delta_temp_soluc = 2;
+static DHT11_sensor_temp_t mef_var_amb_delta_temp = 5;
 
-/* Bandera utilizada para controlar si se está o no en modo manual en el algoritmo de control de temperatura solución. */
-static bool mef_temp_soluc_manual_mode_flag = 0;
-/* Bandera utilizada para controlar las transiciones con reset de la MEF de control de temperatura solución. */
-static bool mef_temp_soluc_reset_transition_flag_control_temp = 0;
-/* Bandera utilizada para verificar si hubo error de sensado del sensor de temperatura de la solución. */
-static bool mef_temp_soluc_sensor_error_flag = 0;
+/* Variable donde se guarda el valor de la humedad relativa ambiente sensada en %. */
+static DHT11_sensor_hum_t mef_var_amb_hum = 0;
+/* Límite superior de humedad ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en %. */
+static DHT11_sensor_hum_t mef_var_amb_limite_superior_hum = 85;
+/* Ancho de la ventana de histeresis de humedad ambiente, posicionada alrededor de los límites del rango considerado como correcto, en %. */
+static DHT11_sensor_hum_t mef_var_amb_ancho_ventana_hist_hum = 5;
+
+/* Variable donde se guarda el valor del CO2 ambiente sensado en ppm. */
+static CO2_sensor_ppm_t mef_var_amb_CO2 = 0;
+/* Límite inferior de CO2 ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en ppm. */
+static CO2_sensor_ppm_t mef_var_amb_limite_inferior_CO2 = 400;
+/* Ancho de la ventana de histeresis de CO2 ambiente, posicionada alrededor de los límites del rango considerado como correcto, en ppm. */
+static CO2_sensor_ppm_t mef_var_amb_ancho_ventana_hist_CO2 = 50;
+
+/* Bandera utilizada para controlar si se está o no en modo manual en el algoritmo de control de las variables ambientales. */
+static bool mef_var_amb_manual_mode_flag = 0;
+/* Bandera utilizada para controlar las transiciones con reset de la MEF de control de las variables ambientales. */
+static bool mef_var_amb_reset_transition_flag_control_var_amb = 0;
+/* Bandera utilizada para verificar si hubo error de sensado de temperatura del sensor DHT11. */
+static bool mef_var_amb_temp_DHT11_sensor_error_flag = 0;
+/* Bandera utilizada para verificar si hubo error de sensado de humedad relativa del sensor DHT11. */
+static bool mef_var_amb_hum_DHT11_sensor_error_flag = 0;
+/* Bandera utilizada para verificar si hubo error de sensado del sensor de CO2. */
+static bool mef_var_amb_CO2_sensor_error_flag = 0;
 
 //==================================| EXTERNAL DATA DEFINITION |==================================//
 
 //==================================| INTERNAL FUNCTIONS DECLARATION |==================================//
 
-void MEFControlTempSoluc(void);
-void vTaskSolutionTempControl(void *pvParameters);
+void MEFControlVarAmb(void);
+void vTaskVarAmbControl(void *pvParameters);
 
 //==================================| INTERNAL FUNCTIONS DEFINITION |==================================//
 
 /**
- * @brief   Función de la MEF de control de la temperatura en la solución nutritiva. Mediante un control
- *          de ventana de histéresis, se accionan el calefactor o refrigerador según sea requerido para
- *          mantener la temperatura de la solución dentro de los límites inferior y superior establecidos.
+ * @brief   Función de la MEF de control de las variables ambientales del sistema, que son la temperatura,
+ *          humedad relativa y nivel de CO2 ambiente. Mediante un control de ventana de histéresis, se 
+ *          accionan los ventiladores o la calefacción según sea requerido para mantener la temperatura,
+ *          humedad y nivel de CO2 del ambiente dentro de los límites inferior y superior establecidos.
+ * 
+ *          Respecto al CO2, solo se controla que el mismo no baje por debajo del valor promedio del 
+ *          exterior, alrededor de 400 ppm, y se ventila el ambiente si esto sucede.
+ * 
+ *          Respecto a la humedad, solo se controla que la misma no suba por encima de un límite establecido,
+ *          y se ventila el ambiente si esto sucede.
  */
-void MEFControlTempSoluc(void)
+void MEFControlVarAmb(void)
 {
     /**
-     * Variable que representa el estado de la MEF de control de temperatura de la solución.
+     * Variable que representa el estado de la MEF de control de las variables ambientales.
      */
-    static estado_MEF_control_temp_soluc_t est_MEF_control_temp_soluc = TEMP_SOLUCION_CORRECTA;
+    static estado_MEF_control_var_amb_t est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
 
     /**
      *  Se controla si se debe hacer una transición con reset, caso en el cual se vuelve al estado
-     *  de TEMP_SOLUCION_CORRECTA, con el refrigerador y calefactor de solución apagados.
+     *  de VAR_AMB_CORRECTAS, con los ventiladores y la calefacción apagados.
      */
-    if (mef_temp_soluc_reset_transition_flag_control_temp)
+    if (mef_var_amb_reset_transition_flag_control_var_amb)
     {
-        est_MEF_control_temp_soluc = TEMP_SOLUCION_CORRECTA;
-        mef_temp_soluc_reset_transition_flag_control_temp = 0;
+        set_relay_state(VENTILADORES, OFF);
+        set_relay_state(CALEFACCION, OFF);
+
+        est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
+        mef_var_amb_reset_transition_flag_control_var_amb = 0;
     }
 
-    switch (est_MEF_control_temp_soluc)
+    switch (est_MEF_control_var_amb)
     {
 
-    case TEMP_SOLUCION_CORRECTA:
+    case VAR_AMB_CORRECTAS:
 
         /**
-         *  En caso de que el nivel de temperatura de la solución caiga por debajo del límite inferior de la ventana de histeresis
-         *  centrada en el límite inferior de nivel de temperatura establecido, se cambia al estado en el cual se enciende
-         *  el calefactor de solución. Además, no debe estar levantada la bandera de error de sensor.
+         *  En caso de que el nivel de CO2 caiga por debajo del límite inferior establecido, o que el nivel de humedad relativa suba
+         *  por encima del límite superior establecido, se cambia al estado en donde se encienden los ventiladores. 
+         * 
+         *  Además, no debe estar levantada ninguna bandera de error de sensor.
          */
-        if (mef_temp_soluc_temp < (mef_temp_soluc_limite_inferior_temp_soluc - (mef_temp_soluc_ancho_ventana_hist / 2)) && !mef_temp_soluc_sensor_error_flag)
+        if ((mef_var_amb_CO2 < (mef_var_amb_limite_inferior_CO2 - (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
+            || mef_var_amb_CO2 > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
+            && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(CALEFACTOR_SOLUC, ON);
-            est_MEF_control_temp_soluc = TEMP_SOLUCION_BAJA;
+            est_MEF_control_var_amb = TEMP_SOLUCION_BAJA;
         }
 
         /**
@@ -108,10 +141,10 @@ void MEFControlTempSoluc(void)
          *  centrada en el límite superior de nivel de temperatura establecido, se cambia al estado en el cual se enciende
          *  el refrigerador de solución. Además, no debe estar levantada la bandera de error de sensor.
          */
-        if (mef_temp_soluc_temp > (mef_temp_soluc_limite_superior_temp_soluc + (mef_temp_soluc_ancho_ventana_hist / 2)) && !mef_temp_soluc_sensor_error_flag)
+        if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(REFRIGERADOR_SOLUC, ON);
-            est_MEF_control_temp_soluc = TEMP_SOLUCION_ELEVADA;
+            est_MEF_control_var_amb = TEMP_SOLUCION_ELEVADA;
         }
 
         break;
@@ -123,10 +156,10 @@ void MEFControlTempSoluc(void)
          *  del rango de temperatura correcto, se transiciona al estado con el refrigerador y calefactor apagados. Además, si se 
          *  levanta la bandera de error de sensor, se transiciona a dicho estado.
          */
-        if (mef_temp_soluc_temp > (mef_temp_soluc_limite_inferior_temp_soluc + (mef_temp_soluc_ancho_ventana_hist / 2)) || mef_temp_soluc_sensor_error_flag)
+        if (mef_var_amb_temp > (mef_var_amb_limite_inferior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) || mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(CALEFACTOR_SOLUC, OFF);
-            est_MEF_control_temp_soluc = TEMP_SOLUCION_CORRECTA;
+            est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
         break;
@@ -138,17 +171,17 @@ void MEFControlTempSoluc(void)
          *  superior del rango de temperatura correcto, se transiciona al estado con el refrigerador y calefactor apagados. Además, 
          *  si se levanta la bandera de error de sensor, se transiciona a dicho estado.
          */
-        if (mef_temp_soluc_temp < (mef_temp_soluc_limite_superior_temp_soluc - (mef_temp_soluc_ancho_ventana_hist / 2)) || mef_temp_soluc_sensor_error_flag)
+        if (mef_var_amb_temp < (mef_var_amb_limite_superior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) || mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(REFRIGERADOR_SOLUC, OFF);
-            est_MEF_control_temp_soluc = TEMP_SOLUCION_CORRECTA;
+            est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
         break;
     }
 }
 
-void vTaskSolutionTempControl(void *pvParameters)
+void vTaskVarAmbControl(void *pvParameters)
 {
     /**
      * Variable que representa el estado de la MEF de jerarquía superior del algoritmo de control del temperatura de la solución.
@@ -179,13 +212,13 @@ void vTaskSolutionTempControl(void *pvParameters)
              *  en donde el accionamiento del calefactor y refrigerador será manejado por el usuario
              *  vía mensajes MQTT.
              */
-            if (mef_temp_soluc_manual_mode_flag)
+            if (mef_var_amb_manual_mode_flag)
             {
                 est_MEF_principal = MODO_MANUAL;
-                mef_temp_soluc_reset_transition_flag_control_temp = 1;
+                mef_var_amb_reset_transition_flag_control_var_amb = 1;
             }
 
-            MEFControlTempSoluc();
+            MEFControlVarAmb();
 
             break;
 
@@ -196,7 +229,7 @@ void vTaskSolutionTempControl(void *pvParameters)
              *  de modo AUTOMATICO, en donde se controla la temperatura de la solución a partir de los
              *  valores del sensor de temperatura sumergible y el calefactor y refrigerador.
              */
-            if (!mef_temp_soluc_manual_mode_flag)
+            if (!mef_var_amb_manual_mode_flag)
             {
                 est_MEF_principal = ALGORITMO_CONTROL_TEMP_SOLUC;
                 break;
@@ -214,13 +247,13 @@ void vTaskSolutionTempControl(void *pvParameters)
             if (manual_mode_refrigerador_state == 0 || manual_mode_refrigerador_state == 1)
             {
                 set_relay_state(REFRIGERADOR_SOLUC, manual_mode_refrigerador_state);
-                ESP_LOGW(mef_temp_soluc_tag, "MANUAL MODE REFRIGERADOR: %.0f", manual_mode_refrigerador_state);
+                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE REFRIGERADOR: %.0f", manual_mode_refrigerador_state);
             }
 
             if (manual_mode_calefactor_state == 0 || manual_mode_calefactor_state == 1)
             {
                 set_relay_state(CALEFACTOR_SOLUC, manual_mode_calefactor_state);
-                ESP_LOGW(mef_temp_soluc_tag, "MANUAL MODE CALEFACTOR: %.0f", manual_mode_calefactor_state);
+                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE CALEFACTOR: %.0f", manual_mode_calefactor_state);
             }
 
             break;
@@ -241,7 +274,7 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
     /**
      *  Copiamos el handle del cliente MQTT en la variable interna.
      */
-    MefTempSolucClienteMQTT = mqtt_client;
+    MefVarAmbClienteMQTT = mqtt_client;
 
     //=======================| CREACION TAREAS |=======================//
 
@@ -249,22 +282,22 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
      *  Se crea la tarea mediante la cual se controlará la transicion de las
      *  MEFs del algoritmo de control de temperatura de solución.
      */
-    if (xMefTempSolucAlgoritmoControlTaskHandle == NULL)
+    if (xMefVarAmbAlgoritmoControlTaskHandle == NULL)
     {
         xTaskCreate(
-            vTaskSolutionTempControl,
-            "vTaskSolutionTempControl",
+            vTaskVarAmbControl,
+            "vTaskVarAmbControl",
             4096,
             NULL,
             2,
-            &xMefTempSolucAlgoritmoControlTaskHandle);
+            &xMefVarAmbAlgoritmoControlTaskHandle);
 
         /**
          *  En caso de que el handle sea NULL, implica que no se pudo crear la tarea, y se retorna con error.
          */
-        if (xMefTempSolucAlgoritmoControlTaskHandle == NULL)
+        if (xMefVarAmbAlgoritmoControlTaskHandle == NULL)
         {
-            ESP_LOGE(mef_temp_soluc_tag, "Failed to create vTaskSolutionTempControl task.");
+            ESP_LOGE(mef_var_amb_tag, "Failed to create vTaskVarAmbControl task.");
             return ESP_FAIL;
         }
     }
@@ -281,7 +314,7 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
  */
 TaskHandle_t mef_temp_soluc_get_task_handle(void)
 {
-    return xMefTempSolucAlgoritmoControlTaskHandle;
+    return xMefVarAmbAlgoritmoControlTaskHandle;
 }
 
 
@@ -289,11 +322,11 @@ TaskHandle_t mef_temp_soluc_get_task_handle(void)
 /**
  * @brief   Función que devuelve el valor del delta de temperatura establecido.
  *
- * @return DS18B20_sensor_temp_t Delta de temperatura en °C.
+ * @return DHT11_sensor_temp_t Delta de temperatura en °C.
  */
-DS18B20_sensor_temp_t mef_temp_soluc_get_delta_temp(void)
+DHT11_sensor_temp_t mef_temp_soluc_get_delta_temp(void)
 {
-    return mef_temp_soluc_delta_temp_soluc;
+    return mef_var_amb_delta_temp;
 }
 
 
@@ -305,10 +338,10 @@ DS18B20_sensor_temp_t mef_temp_soluc_get_delta_temp(void)
  * @param nuevo_limite_inferior_temp_soluc   Límite inferior del rango.
  * @param nuevo_limite_superior_temp_soluc   Límite superior del rango.
  */
-void mef_temp_soluc_set_temp_control_limits(DS18B20_sensor_temp_t nuevo_limite_inferior_temp_soluc, DS18B20_sensor_temp_t nuevo_limite_superior_temp_soluc)
+void mef_temp_soluc_set_temp_control_limits(DHT11_sensor_temp_t nuevo_limite_inferior_temp_soluc, DHT11_sensor_temp_t nuevo_limite_superior_temp_soluc)
 {
-    mef_temp_soluc_limite_inferior_temp_soluc = nuevo_limite_inferior_temp_soluc;
-    mef_temp_soluc_limite_superior_temp_soluc = nuevo_limite_superior_temp_soluc;
+    mef_var_amb_limite_inferior_temp = nuevo_limite_inferior_temp_soluc;
+    mef_var_amb_limite_superior_temp = nuevo_limite_superior_temp_soluc;
 }
 
 
@@ -318,9 +351,9 @@ void mef_temp_soluc_set_temp_control_limits(DS18B20_sensor_temp_t nuevo_limite_i
  *
  * @param nuevo_valor_temp_soluc Nuevo valor de temperatura de la solución en °C.
  */
-void mef_temp_soluc_set_temp_soluc_value(DS18B20_sensor_temp_t nuevo_valor_temp_soluc)
+void mef_temp_soluc_set_temp_soluc_value(DHT11_sensor_temp_t nuevo_valor_temp_soluc)
 {
-    mef_temp_soluc_temp = nuevo_valor_temp_soluc;
+    mef_var_amb_temp = nuevo_valor_temp_soluc;
 }
 
 
@@ -333,7 +366,7 @@ void mef_temp_soluc_set_temp_soluc_value(DS18B20_sensor_temp_t nuevo_valor_temp_
  */
 void mef_temp_soluc_set_manual_mode_flag_value(bool manual_mode_flag_state)
 {
-    mef_temp_soluc_manual_mode_flag = manual_mode_flag_state;
+    mef_var_amb_manual_mode_flag = manual_mode_flag_state;
 }
 
 
@@ -345,5 +378,5 @@ void mef_temp_soluc_set_manual_mode_flag_value(bool manual_mode_flag_state)
  */
 void mef_temp_soluc_set_sensor_error_flag_value(bool sensor_error_flag_state)
 {
-    mef_temp_soluc_sensor_error_flag = sensor_error_flag_state;
+    mef_var_amb_temp_DHT11_sensor_error_flag = sensor_error_flag_state;
 }

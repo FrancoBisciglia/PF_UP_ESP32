@@ -1,2 +1,2 @@
-idf_component_register(SRCS "main.c"
+idf_component_register(SRCS "MEF_ALGORITMO_CONTROL_VAR_AMB.c" "DHT11_SENSOR.c" "CO2_SENSOR.c" "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.c" "main.c"
                     INCLUDE_DIRS ".")

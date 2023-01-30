@@ -157,15 +157,23 @@ void CallbackGetTempAmbData(void *pvParameters)
         }
     }
 
+    /**
+     *  Se ordenan los datos obtenidos de menor a mayor.
+     */
     SortData(temperaturas_unidades_sec, cantidad_datos_correctos);
 
-    ME QUEDE ACA
+    /**
+     *  Se obtiene la mediana de los datos recopilados.
+     */
+    float mediana_temperaturas_unidades_sec;
 
     if ( cantidad_datos_correctos % 2 = = 0 )  
-        median = ( temperaturas_unidades_sec[ cantidad_datos_correctos / 2 ] + temperaturas_unidades_sec[ cantidad_datos_correctos / 2 + 1 ] ) / 2 . 0 ;  
+        mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
-        median = temperaturas_unidades_sec[ cantidad_datos_correctos / 2 + 1 ] ;
+        mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+
+    ACA FALTA LA FUNCIÓN PARA PASARLE A LA MEF EL VALOR DE TEMPERATURA
 }
 
 
