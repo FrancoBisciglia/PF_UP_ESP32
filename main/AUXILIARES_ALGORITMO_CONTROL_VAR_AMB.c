@@ -1,7 +1,8 @@
 /**
- * @file AUXILIARES_ALGORITMO_CONTROL_TEMP_SOLUCION.c
+ * @file AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.c
  * @author Franco Bisciglia, David Kündinger
- * @brief   Funcionalidades del algoritmo de control de la temperatura de la solución nutritiva, como funciones callback o de inicialización.
+ * @brief   Funcionalidades del algoritmo de control de las variables ambientales (tempratura, humedad, CO2), 
+ *          como funciones callback o de inicialización.
  * @version 0.1
  * @date 2023-01-16
  * 
@@ -21,19 +22,21 @@
 #include "freertos/task.h"
 
 #include "MQTT_PUBL_SUSCR.h"
-#include "DS18B20_SENSOR.h"
-#include "MEF_ALGORITMO_CONTROL_TEMP_SOLUCION.h"
-#include "AUXILIARES_ALGORITMO_CONTROL_TEMP_SOLUCION.h"
+#include "MEF_ALGORITMO_CONTROL_VAR_AMB.h"
+#include "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.h"
 
 //==================================| MACROS AND TYPDEF |==================================//
 
 //==================================| INTERNAL DATA DEFINITION |==================================//
 
 /* Tag para imprimir información en el LOG. */
-static const char *aux_control_temp_soluc_tag = "AUXILIAR_CONTROL_TEMP_SOLUCION";
+static const char *aux_control_var_amb_tag = "AUXILIAR_CONTROL_VAR_AMB";
 
 /* Handle del cliente MQTT. */
 static esp_mqtt_client_handle_t Cliente_MQTT = NULL;
+
+/* Cantidad de unidades secundarias presentes en el sistema. */
+unsigned int aux_control_var_amb_cantidad_unidades_sec = 0;
 
 //==================================| EXTERNAL DATA DEFINITION |==================================//
 
@@ -109,53 +112,92 @@ void CallbackManualModeNewActuatorState(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackGetTempSolucData(void *pvParameters)
+void CallbackGetTempAmbData(void *pvParameters)
 {
     /**
-     *  Variable donde se guarda el retorno de la función de obtención del valor
-     *  del sensor, para verificar si se ejecutó correctamente o no.
+     *  Se inicializa un array dinámico en donde se irán guardando los datos de
+     *  temperatura ambiente sensados por cada una de las unidades secundarias,
+     *  para luego obtener la mediana del mismo.
      */
-    esp_err_t return_status = ESP_FAIL;
+    float *temperaturas_unidades_sec = NULL;
 
     /**
-     *  Se obtiene el nuevo dato de temperatura de la solución nutritiva.
+     *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
+     *  que son considerados como correctos, esto es, que no tienen el código de error 
+     *  "CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB".
      */
-    DS18B20_sensor_temp_t temp_soluc;
-    return_status = DS18B20_getTemp(&temp_soluc);
+    unsigned int cantidad_datos_correctos = 0;
 
     /**
-     *  Se verifica que la función de obtención del valor de temperatura de solución no haya retornado con error, y que el valor de 
-     *  temperatura retornado este dentro del rango considerado como válido para dicha variable.
-     * 
-     *  En caso de que no se cumplan estas condiciones, se setea la bandera de error de sensor, utilizada por la MEF
-     *  de control de temperatura de solución, y se le carga al valor de temperatura un código de error preestablecido 
-     *  (-10), para que así, al leerse dicho valor, se pueda saber que ocurrió un error.
+     *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
      */
-    if(return_status == ESP_FAIL || temp_soluc < LIMITE_INFERIOR_RANGO_VALIDO_TEMPERATURA_SOLUC || temp_soluc > LIMITE_SUPERIOR_RANGO_VALIDO_TEMPERATURA_SOLUC)
+    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
     {
-        temp_soluc = CODIGO_ERROR_SENSOR_TEMPERATURA_SOLUC;
-        mef_temp_soluc_set_sensor_error_flag_value(1);
-        ESP_LOGE(aux_control_temp_soluc_tag, "SOLUTION TEMPERATURE SENSOR ERROR DETECTED");
+        float buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
+        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+
+        /**
+         *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
+         *  no se considera dicho dato para el posterior cálculo de la mediana.
+         */
+        if(buffer != CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB)
+        {
+            if(temperaturas_unidades_sec == NULL)
+            {
+                temperaturas_unidades_sec = calloc(1, sizeof(float));
+            }
+
+            else
+            {
+                temperaturas_unidades_sec = (float*) realloc(temperaturas_unidades_sec, cantidad_datos_correctos * sizeof(float));
+            }
+
+            temperaturas_unidades_sec[cantidad_datos_correctos] = buffer;
+            cantidad_datos_correctos++;
+        }
     }
 
-    else
-    {
-        mef_tds_set_sensor_error_flag_value(0);
-        ESP_LOGW(aux_control_temp_soluc_tag, "NEW MEASURMENT ARRIVED: %.3f", temp_soluc);
-    }
+    SortData(temperaturas_unidades_sec, cantidad_datos_correctos);
 
+    ME QUEDE ACA
+
+    if ( cantidad_datos_correctos % 2 = = 0 )  
+        median = ( temperaturas_unidades_sec[ cantidad_datos_correctos / 2 ] + temperaturas_unidades_sec[ cantidad_datos_correctos / 2 + 1 ] ) / 2 . 0 ;  
+    
+    else  
+        median = temperaturas_unidades_sec[ cantidad_datos_correctos / 2 + 1 ] ;
+}
+
+
+
+/**
+ * @brief   Función utilizada para ordenar de forma ascendente un array de datos.
+ * 
+ * @param data_array    El array de datos a ordenar.
+ * @param cantidad_datos    Cantidad de datos que posee el array.
+ */
+void SortData(float *data_array, unsigned int cantidad_datos)
+{
+    float temp;
 
     /**
-     *  Si hay una conexión con el broker MQTT, se publica el valor de temperatura sensado.
+     *  Se ordenan los valores del menor al mayor con el método de la burbuja.
      */
-    if(mqtt_check_connection())
+    if(cantidad_datos > 1)
     {
-        char buffer[10];
-        snprintf(buffer, sizeof(buffer), "%.3f", temp_soluc);
-        esp_mqtt_client_publish(Cliente_MQTT, TEMP_SOLUC_MQTT_TOPIC, buffer, 0, 0, 0);
+        for(int i = 1; i < cantidad_datos; i++)
+        {
+            for(int j=0; j < cantidad_datos-i; j++)
+            {
+                if(data_array[j] > data_array[j+1])
+                {
+                    temp = data_array[j];
+                    data_array[j]=data_array[j+1];
+                    data_array[j+1]=temp;
+                }
+            }  
+        }
     }
-
-    mef_temp_soluc_set_temp_soluc_value(temp_soluc);
 }
 
 
@@ -174,7 +216,7 @@ void CallbackNewTempSolucSP(void *pvParameters)
     DS18B20_sensor_temp_t SP_temp_soluc = 0;
     mqtt_get_float_data_from_topic(NEW_TEMP_SP_MQTT_TOPIC, &SP_temp_soluc);
 
-    ESP_LOGI(aux_control_temp_soluc_tag, "NUEVO SP: %.3f", SP_temp_soluc);
+    ESP_LOGI(aux_control_var_amb_tag, "NUEVO SP: %.3f", SP_temp_soluc);
 
     /**
      *  A partir del valor de SP de temperatura, se calculan los límites superior e inferior
@@ -198,8 +240,8 @@ void CallbackNewTempSolucSP(void *pvParameters)
      */
     mef_temp_soluc_set_temp_control_limits(limite_inferior_temp_soluc, limite_superior_temp_soluc);
 
-    ESP_LOGI(aux_control_temp_soluc_tag, "LIMITE INFERIOR: %.3f", limite_inferior_temp_soluc);
-    ESP_LOGI(aux_control_temp_soluc_tag, "LIMITE SUPERIOR: %.3f", limite_superior_temp_soluc);
+    ESP_LOGI(aux_control_var_amb_tag, "LIMITE INFERIOR: %.3f", limite_inferior_temp_soluc);
+    ESP_LOGI(aux_control_var_amb_tag, "LIMITE SUPERIOR: %.3f", limite_superior_temp_soluc);
 }
 
 //==================================| EXTERNAL FUNCTIONS DEFINITION |==================================//
@@ -226,7 +268,7 @@ esp_err_t aux_control_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
      */
     if(DS18B20_sensor_init(GPIO_PIN_CO2_SENSOR) != ESP_OK)
     {
-        ESP_LOGE(aux_control_temp_soluc_tag, "FAILED TO INITIALIZE DS18B20 SENSOR.");
+        ESP_LOGE(aux_control_var_amb_tag, "FAILED TO INITIALIZE DS18B20 SENSOR.");
         return ESP_FAIL;
     }
 
@@ -259,7 +301,7 @@ esp_err_t aux_control_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
      */
     if(mqtt_suscribe_to_topics(list_of_topics, 4, Cliente_MQTT, 0) != ESP_OK)
     {
-        ESP_LOGE(aux_control_temp_soluc_tag, "FAILED TO SUSCRIBE TO MQTT TOPICS.");
+        ESP_LOGE(aux_control_var_amb_tag, "FAILED TO SUSCRIBE TO MQTT TOPICS.");
         return ESP_FAIL;
     }
 
