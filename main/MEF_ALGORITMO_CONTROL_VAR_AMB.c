@@ -20,6 +20,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "mqtt_client.h"
+
 #include "MQTT_PUBL_SUSCR.h"
 #include "DHT11_SENSOR.h"
 #include "CO2_SENSOR.h"
@@ -133,6 +135,16 @@ void MEFControlVarAmb(void)
             && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(VENTILADORES, ON);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "ON");
+                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = CO2_BAJO_O_HUM_AMB_ALTA;
         }
 
@@ -148,6 +160,16 @@ void MEFControlVarAmb(void)
             && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(CALEFACCION, ON);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "ON");
+                esp_mqtt_client_publish(Cliente_MQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = TEMP_AMB_BAJA;
         }
 
@@ -163,6 +185,16 @@ void MEFControlVarAmb(void)
             && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(VENTILADORES, ON);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "ON");
+                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = TEMP_AMB_ELEVADA;
         }
 
@@ -182,6 +214,16 @@ void MEFControlVarAmb(void)
             && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(VENTILADORES, OFF);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
@@ -199,6 +241,16 @@ void MEFControlVarAmb(void)
             || mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(CALEFACCION, OFF);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                esp_mqtt_client_publish(Cliente_MQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
@@ -216,6 +268,16 @@ void MEFControlVarAmb(void)
             || mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(VENTILADORES, OFF);
+            /**
+             *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+             */
+            if(mqtt_check_connection())
+            {
+                char buffer[10];
+                snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            }
+
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
@@ -226,7 +288,8 @@ void MEFControlVarAmb(void)
 
 
 /**
- * @brief 
+ * @brief   Tarea encargada del control de la MEF de mayor jerarquía del algoritmo de control de las variables
+ *          ambientales, que son la temperatura, humedad relativa y nivel de CO2 ambiente.
  * 
  * @param pvParameters 
  */
@@ -292,10 +355,8 @@ void vTaskVarAmbControl(void *pvParameters)
             float manual_mode_ventiladores_state = -1;
             float manual_mode_calefaccion_state = -1;
 
-            FALTA CAMBIAR LOS TOPICOS MQTT
-            
-            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_AUM_TDS_STATE_MQTT_TOPIC, &manual_mode_ventiladores_state);
-            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_DISM_TDS_STATE_MQTT_TOPIC, &manual_mode_calefaccion_state);
+            mqtt_get_float_data_from_topic(MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC, &manual_mode_ventiladores_state);
+            mqtt_get_float_data_from_topic(MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC, &manual_mode_calefaccion_state);
 
             if (manual_mode_ventiladores_state == 0 || manual_mode_ventiladores_state == 1)
             {
@@ -317,12 +378,12 @@ void vTaskVarAmbControl(void *pvParameters)
 //==================================| EXTERNAL FUNCTIONS DEFINITION |==================================//
 
 /**
- * @brief   Función para inicializar el módulo de MEFs del algoritmo de temperatura de la solución.
+ * @brief   Función para inicializar el módulo de MEFs del algoritmo de control de variables ambientales.
  *
  * @param mqtt_client   Handle del cliente MQTT.
  * @return esp_err_t
  */
-esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
+esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
 {
     /**
      *  Copiamos el handle del cliente MQTT en la variable interna.
@@ -333,7 +394,7 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
 
     /**
      *  Se crea la tarea mediante la cual se controlará la transicion de las
-     *  MEFs del algoritmo de control de temperatura de solución.
+     *  MEFs del algoritmo de control de variables ambientales.
      */
     if (xMefVarAmbAlgoritmoControlTaskHandle == NULL)
     {
@@ -342,7 +403,7 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
             "vTaskVarAmbControl",
             4096,
             NULL,
-            2,
+            3,
             &xMefVarAmbAlgoritmoControlTaskHandle);
 
         /**
@@ -361,11 +422,11 @@ esp_err_t mef_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
 
 
 /**
- * @brief   Función que devuelve el Task Handle de la tarea principal del algoritmo de control de temperatura de solución.
+ * @brief   Función que devuelve el Task Handle de la tarea principal del algoritmo de control de variables ambientales.
  *
  * @return TaskHandle_t Task Handle de la tarea.
  */
-TaskHandle_t mef_temp_soluc_get_task_handle(void)
+TaskHandle_t mef_var_amb_get_task_handle(void)
 {
     return xMefVarAmbAlgoritmoControlTaskHandle;
 }
@@ -373,11 +434,11 @@ TaskHandle_t mef_temp_soluc_get_task_handle(void)
 
 
 /**
- * @brief   Función que devuelve el valor del delta de temperatura establecido.
+ * @brief   Función que devuelve el valor del delta de temperatura ambiente establecido.
  *
  * @return DHT11_sensor_temp_t Delta de temperatura en °C.
  */
-DHT11_sensor_temp_t mef_temp_soluc_get_delta_temp(void)
+DHT11_sensor_temp_t mef_var_amb_get_delta_temp(void)
 {
     return mef_var_amb_delta_temp;
 }
@@ -385,28 +446,52 @@ DHT11_sensor_temp_t mef_temp_soluc_get_delta_temp(void)
 
 
 /**
- * @brief   Función para establecer nuevos límites del rango de temperatura considerado como correcto para el 
- *          algoritmo de control de temperatura de solución.
+ * @brief   Función para establecer nuevos límites del rango de temperatura ambiente considerado como correcto para el 
+ *          algoritmo de control de variables ambientales.
  *
- * @param nuevo_limite_inferior_temp_soluc   Límite inferior del rango.
- * @param nuevo_limite_superior_temp_soluc   Límite superior del rango.
+ * @param nuevo_limite_inferior_temp_amb   Límite inferior del rango.
+ * @param nuevo_limite_superior_temp_amb   Límite superior del rango.
  */
-void mef_temp_soluc_set_temp_control_limits(DHT11_sensor_temp_t nuevo_limite_inferior_temp_soluc, DHT11_sensor_temp_t nuevo_limite_superior_temp_soluc)
+void mef_var_amb_set_temp_control_limits(DHT11_sensor_temp_t nuevo_limite_inferior_temp_amb, DHT11_sensor_temp_t nuevo_limite_superior_temp_amb)
 {
-    mef_var_amb_limite_inferior_temp = nuevo_limite_inferior_temp_soluc;
-    mef_var_amb_limite_superior_temp = nuevo_limite_superior_temp_soluc;
+    mef_var_amb_limite_inferior_temp = nuevo_limite_inferior_temp_amb;
+    mef_var_amb_limite_superior_temp = nuevo_limite_superior_temp_amb;
 }
 
 
 
 /**
- * @brief   Función para actualizar el valor de temperatura de la solución sensado.
+ * @brief   Función para actualizar el valor de temperatura ambiente sensado.
  *
- * @param nuevo_valor_temp_soluc Nuevo valor de temperatura de la solución en °C.
+ * @param nuevo_valor_temp_amb Nuevo valor de temperatura ambiente, en °C.
  */
-void mef_temp_soluc_set_temp_soluc_value(DHT11_sensor_temp_t nuevo_valor_temp_soluc)
+void mef_var_amb_set_temp_amb_value(DHT11_sensor_temp_t nuevo_valor_temp_amb)
 {
-    mef_var_amb_temp = nuevo_valor_temp_soluc;
+    mef_var_amb_temp = nuevo_valor_temp_amb;
+}
+
+
+
+/**
+ * @brief   Función para actualizar el valor de humedad relativa ambiente sensado.
+ *
+ * @param nuevo_valor_hum_amb Nuevo valor de humedad relativa ambiente, en %.
+ */
+void mef_var_amb_set_hum_amb_value(DHT11_sensor_hum_t nuevo_valor_hum_amb)
+{
+    mef_var_amb_hum = nuevo_valor_hum_amb;
+}
+
+
+
+/**
+ * @brief   Función para actualizar el valor de CO2 ambiente sensado.
+ *
+ * @param nuevo_valor_CO2_amb Nuevo valor de CO2 ambiente, en ppm.
+ */
+void mef_var_amb_set_CO2_amb_value(CO2_sensor_ppm_t nuevo_valor_CO2_amb)
+{
+    mef_var_amb_CO2 = nuevo_valor_CO2_amb;
 }
 
 
@@ -417,7 +502,7 @@ void mef_temp_soluc_set_temp_soluc_value(DHT11_sensor_temp_t nuevo_valor_temp_so
  *
  * @param manual_mode_flag_state    Estado de la bandera.
  */
-void mef_temp_soluc_set_manual_mode_flag_value(bool manual_mode_flag_state)
+void mef_var_amb_set_manual_mode_flag_value(bool manual_mode_flag_state)
 {
     mef_var_amb_manual_mode_flag = manual_mode_flag_state;
 }
@@ -425,11 +510,35 @@ void mef_temp_soluc_set_manual_mode_flag_value(bool manual_mode_flag_state)
 
 
 /**
- * @brief   Función para cambiar el estado de la bandera de error de sensor de temperatura de solución.
+ * @brief   Función para cambiar el estado de la bandera de error de temperatura del sensor DHT11.
  *
  * @param sensor_error_flag_state    Estado de la bandera.
  */
-void mef_temp_soluc_set_sensor_error_flag_value(bool sensor_error_flag_state)
+void mef_var_amb_set_temp_DHT11_sensor_error_flag_value(bool sensor_error_flag_state)
 {
     mef_var_amb_temp_DHT11_sensor_error_flag = sensor_error_flag_state;
+}
+
+
+
+/**
+ * @brief   Función para cambiar el estado de la bandera de error de humedad del sensor DHT11.
+ *
+ * @param sensor_error_flag_state    Estado de la bandera.
+ */
+void mef_var_amb_set_hum_DHT11_sensor_error_flag_value(bool sensor_error_flag_state)
+{
+    mef_var_amb_hum_DHT11_sensor_error_flag = sensor_error_flag_state;
+}
+
+
+
+/**
+ * @brief   Función para cambiar el estado de la bandera de error del sensor de CO2.
+ *
+ * @param sensor_error_flag_state    Estado de la bandera.
+ */
+void mef_var_amb_set_CO2_sensor_error_flag_value(bool sensor_error_flag_state)
+{
+    mef_var_amb_CO2_sensor_error_flag = sensor_error_flag_state;
 }

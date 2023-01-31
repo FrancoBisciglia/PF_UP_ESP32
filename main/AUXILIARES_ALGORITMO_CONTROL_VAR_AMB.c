@@ -22,6 +22,7 @@
 #include "freertos/task.h"
 
 #include "MQTT_PUBL_SUSCR.h"
+#include "DHT11_SENSOR.h"
 #include "MEF_ALGORITMO_CONTROL_VAR_AMB.h"
 #include "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.h"
 
@@ -44,7 +45,9 @@ unsigned int aux_control_var_amb_cantidad_unidades_sec = 0;
 
 void CallbackManualMode(void *pvParameters);
 void CallbackManualModeNewActuatorState(void *pvParameters);
-void CallbackGetTempSolucData(void *pvParameters);
+void CallbackGetTempAmbData(void *pvParameters);
+void CallbackGetHumAmbData(void *pvParameters);
+void CallbackGetCO2AmbData(void *pvParameters);
 void CallbackNewTempSolucSP(void *pvParameters);
 
 //==================================| INTERNAL FUNCTIONS DEFINITION |==================================//
@@ -67,48 +70,49 @@ void CallbackManualMode(void *pvParameters)
     /**
      *  Dependiendo si el mensaje fue "MANUAL" o "AUTO", se setea o resetea
      *  la bandera correspondiente para señalizarle a la MEF de control de
-     *  TDS que debe pasar al estado de modo MANUAL o AUTOMATICO.
+     *  variables ambientales que debe pasar al estado de modo MANUAL o AUTOMATICO.
      */
     if(!strcmp("MANUAL", buffer))
     {
-        mef_temp_soluc_set_manual_mode_flag_value(1);
+        mef_var_amb_set_manual_mode_flag_value(1);
     }
 
     else if(!strcmp("AUTO", buffer))
     {
-        mef_temp_soluc_set_manual_mode_flag_value(0);
+        mef_var_amb_set_manual_mode_flag_value(0);
     }
 
     /**
-     * Se le envía un Task Notify a la tarea de la MEF de control de TDS.
+     * Se le envía un Task Notify a la tarea de la MEF de control de variables ambientales.
      */
-    xTaskNotifyGive(mef_temp_soluc_get_task_handle());
+    xTaskNotifyGive(mef_var_amb_get_task_handle());
 }
 
 
 
 /**
  *  @brief  Función de callback que se ejecuta cuando llega un mensaje MQTT en el tópico
- *          correspondiente al estado de los actuadores de control de temperatura de solución
+ *          correspondiente al estado de los actuadores de control de variables ambientales
  *          en el modo MANUAL.
- *          Es decir, cuando estando en modo MANUAL, se quiere accionar el refrigerador
- *          o el calefactor de la solución.
+ * 
+ *          Es decir, cuando estando en modo MANUAL, se quiere accionar los ventiladores
+ *          o la calefacción.
  * 
  * @param pvParameters 
  */
 void CallbackManualModeNewActuatorState(void *pvParameters)
 {
     /**
-     * Se le envía un Task Notify a la tarea de la MEF de control de temperatura de solución.
+     * Se le envía un Task Notify a la tarea de la MEF de control de variables ambientales.
      */
-    xTaskNotifyGive(mef_temp_soluc_get_task_handle());
+    xTaskNotifyGive(mef_var_amb_get_task_handle());
 }
 
 
 
 /**
- *  @brief  Función de callback que se ejecuta cuando se completa una nueva medición del
- *          sensor de temperatura sumergible.
+ *  @brief  Función de callback que se ejecuta cuando se completa una nueva medición de
+ *          temperatura de alguno de los sensores DHT11 de las unidades secundarias.
  * 
  * @param pvParameters 
  */
@@ -119,7 +123,7 @@ void CallbackGetTempAmbData(void *pvParameters)
      *  temperatura ambiente sensados por cada una de las unidades secundarias,
      *  para luego obtener la mediana del mismo.
      */
-    float *temperaturas_unidades_sec = NULL;
+    DHT11_sensor_temp_t *temperaturas_unidades_sec = NULL;
 
     /**
      *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
@@ -133,7 +137,7 @@ void CallbackGetTempAmbData(void *pvParameters)
      */
     for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
     {
-        float buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
+        DHT11_sensor_temp_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
         mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
 
         /**
@@ -144,12 +148,12 @@ void CallbackGetTempAmbData(void *pvParameters)
         {
             if(temperaturas_unidades_sec == NULL)
             {
-                temperaturas_unidades_sec = calloc(1, sizeof(float));
+                temperaturas_unidades_sec = calloc(1, sizeof(DHT11_sensor_temp_t));
             }
 
             else
             {
-                temperaturas_unidades_sec = (float*) realloc(temperaturas_unidades_sec, cantidad_datos_correctos * sizeof(float));
+                temperaturas_unidades_sec = (DHT11_sensor_temp_t*) realloc(temperaturas_unidades_sec, cantidad_datos_correctos * sizeof(DHT11_sensor_temp_t));
             }
 
             temperaturas_unidades_sec[cantidad_datos_correctos] = buffer;
@@ -165,7 +169,7 @@ void CallbackGetTempAmbData(void *pvParameters)
     /**
      *  Se obtiene la mediana de los datos recopilados.
      */
-    float mediana_temperaturas_unidades_sec;
+    DHT11_sensor_temp_t mediana_temperaturas_unidades_sec;
 
     if ( cantidad_datos_correctos % 2 = = 0 )  
         mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
@@ -173,7 +177,163 @@ void CallbackGetTempAmbData(void *pvParameters)
     else  
         mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1];
 
-    ACA FALTA LA FUNCIÓN PARA PASARLE A LA MEF EL VALOR DE TEMPERATURA
+
+    /**
+     *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
+     */
+    mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
+}
+
+
+
+/**
+ *  @brief  Función de callback que se ejecuta cuando se completa una nueva medición de
+ *          humedad relativa de alguno de los sensores DHT11 de las unidades secundarias.
+ * 
+ * @param pvParameters 
+ */
+void CallbackGetHumAmbData(void *pvParameters)
+{
+    /**
+     *  Se inicializa un array dinámico en donde se irán guardando los datos de
+     *  humedad relativa ambiente sensados por cada una de las unidades secundarias,
+     *  para luego obtener la mediana del mismo.
+     */
+    DHT11_sensor_hum_t *humedades_unidades_sec = NULL;
+
+    /**
+     *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
+     *  que son considerados como correctos, esto es, que no tienen el código de error 
+     *  "CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB".
+     */
+    unsigned int cantidad_datos_correctos = 0;
+
+    /**
+     *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
+     */
+    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
+    {
+        DHT11_sensor_hum_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
+        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+
+        /**
+         *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
+         *  no se considera dicho dato para el posterior cálculo de la mediana.
+         */
+        if(buffer != CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB)
+        {
+            if(humedades_unidades_sec == NULL)
+            {
+                humedades_unidades_sec = calloc(1, sizeof(DHT11_sensor_hum_t));
+            }
+
+            else
+            {
+                humedades_unidades_sec = (DHT11_sensor_hum_t*) realloc(humedades_unidades_sec, cantidad_datos_correctos * sizeof(DHT11_sensor_hum_t));
+            }
+
+            humedades_unidades_sec[cantidad_datos_correctos] = buffer;
+            cantidad_datos_correctos++;
+        }
+    }
+
+    /**
+     *  Se ordenan los datos obtenidos de menor a mayor.
+     */
+    SortData(humedades_unidades_sec, cantidad_datos_correctos);
+
+    /**
+     *  Se obtiene la mediana de los datos recopilados.
+     */
+    DHT11_sensor_hum_t mediana_temperaturas_unidades_sec;
+
+    if ( cantidad_datos_correctos % 2 = = 0 )  
+        mediana_temperaturas_unidades_sec = (humedades_unidades_sec[cantidad_datos_correctos / 2] + humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+    
+    else  
+        mediana_temperaturas_unidades_sec = humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+
+
+    /**
+     *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
+     */
+    mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
+}
+
+
+
+/**
+ *  @brief  Función de callback que se ejecuta cuando se completa una nueva medición de
+ *          temperatura de alguno de los sensores DHT11 de las unidades secundarias.
+ * 
+ * @param pvParameters 
+ */
+void CallbackGetCO2AmbData(void *pvParameters)
+{
+    /**
+     *  Se inicializa un array dinámico en donde se irán guardando los datos de
+     *  temperatura ambiente sensados por cada una de las unidades secundarias,
+     *  para luego obtener la mediana del mismo.
+     */
+    DHT11_sensor_temp_t *temperaturas_unidades_sec = NULL;
+
+    /**
+     *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
+     *  que son considerados como correctos, esto es, que no tienen el código de error 
+     *  "CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB".
+     */
+    unsigned int cantidad_datos_correctos = 0;
+
+    /**
+     *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
+     */
+    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
+    {
+        DHT11_sensor_temp_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
+        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+
+        /**
+         *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
+         *  no se considera dicho dato para el posterior cálculo de la mediana.
+         */
+        if(buffer != CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB)
+        {
+            if(temperaturas_unidades_sec == NULL)
+            {
+                temperaturas_unidades_sec = calloc(1, sizeof(DHT11_sensor_temp_t));
+            }
+
+            else
+            {
+                temperaturas_unidades_sec = (DHT11_sensor_temp_t*) realloc(temperaturas_unidades_sec, cantidad_datos_correctos * sizeof(DHT11_sensor_temp_t));
+            }
+
+            temperaturas_unidades_sec[cantidad_datos_correctos] = buffer;
+            cantidad_datos_correctos++;
+        }
+    }
+
+    /**
+     *  Se ordenan los datos obtenidos de menor a mayor.
+     */
+    SortData(temperaturas_unidades_sec, cantidad_datos_correctos);
+
+    /**
+     *  Se obtiene la mediana de los datos recopilados.
+     */
+    DHT11_sensor_temp_t mediana_temperaturas_unidades_sec;
+
+    if ( cantidad_datos_correctos % 2 = = 0 )  
+        mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+    
+    else  
+        mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+
+
+    /**
+     *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
+     */
+    mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
 }
 
 
