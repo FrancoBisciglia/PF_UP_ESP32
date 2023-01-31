@@ -132,48 +132,90 @@ void MEFControlVarAmb(void)
             || mef_var_amb_CO2 > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
             && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
-            set_relay_state(CALEFACTOR_SOLUC, ON);
-            est_MEF_control_var_amb = TEMP_SOLUCION_BAJA;
+            set_relay_state(VENTILADORES, ON);
+            est_MEF_control_var_amb = CO2_BAJO_O_HUM_AMB_ALTA;
         }
 
+
         /**
-         *  En caso de que el nivel de temperatura de la solución suba por encima del límite superior de la ventana de histeresis
-         *  centrada en el límite superior de nivel de temperatura establecido, se cambia al estado en el cual se enciende
-         *  el refrigerador de solución. Además, no debe estar levantada la bandera de error de sensor.
+         *  En caso de que el nivel de temperatura ambiente baje por debajo del límite inferior de la ventana de histeresis
+         *  centrada en el límite inferior del nivel de temperatura establecido, se cambia al estado en el cual se enciende
+         *  la calefacción.
+         * 
+         *  Además, no debe estar levantada la bandera de error de sensor.
          */
-        if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) && !mef_var_amb_temp_DHT11_sensor_error_flag)
+        if (mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) 
+            && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
-            set_relay_state(REFRIGERADOR_SOLUC, ON);
-            est_MEF_control_var_amb = TEMP_SOLUCION_ELEVADA;
+            set_relay_state(CALEFACCION, ON);
+            est_MEF_control_var_amb = TEMP_AMB_BAJA;
+        }
+
+
+        /**
+         *  En caso de que el nivel de temperatura ambiente suba por encima del límite superior de la ventana de histeresis
+         *  centrada en el límite superior del nivel de temperatura establecido, se cambia al estado en el cual se encienden
+         *  los ventiladores.
+         * 
+         *  Además, no debe estar levantada la bandera de error de sensor.
+         */
+        if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) 
+            && !mef_var_amb_temp_DHT11_sensor_error_flag)
+        {
+            set_relay_state(VENTILADORES, ON);
+            est_MEF_control_var_amb = TEMP_AMB_ELEVADA;
         }
 
         break;
-
-    case TEMP_SOLUCION_BAJA:
+    
+    case CO2_BAJO_O_HUM_AMB_ALTA:
 
         /**
-         *  Cuando el nivel de temperatura sobrepase el límite superior de la ventana de histeresis centrada en el límite inferior
-         *  del rango de temperatura correcto, se transiciona al estado con el refrigerador y calefactor apagados. Además, si se 
-         *  levanta la bandera de error de sensor, se transiciona a dicho estado.
+         *  En caso de que el nivel de CO2 suba por encima del límite inferior establecido, o que el nivel de humedad relativa baje
+         *  por debajo del límite superior establecido, o que la temperatura ambiente baje por debajo del límite inferior establecido,
+         *  ya que se le da prioridad a dicha variable, o que se levante alguna de las banderas de error de sensado, se cambia al 
+         *  estado en donde se apagan los actuadores.
          */
-        if (mef_var_amb_temp > (mef_var_amb_limite_inferior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) || mef_var_amb_temp_DHT11_sensor_error_flag)
+        if ((mef_var_amb_CO2 > (mef_var_amb_limite_inferior_CO2 + (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
+            || mef_var_amb_CO2 < (mef_var_amb_limite_superior_hum - (mef_var_amb_ancho_ventana_hist_hum / 2))
+            || mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
+            && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
-            set_relay_state(CALEFACTOR_SOLUC, OFF);
+            set_relay_state(VENTILADORES, OFF);
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
         break;
 
-    case TEMP_SOLUCION_ELEVADA:
+    case TEMP_AMB_BAJA:
+
+        /**
+         *  Cuando el nivel de temperatura sobrepase el límite superior de la ventana de histeresis centrada en el límite inferior
+         *  del rango de temperatura correcto, se transiciona al estado con los actuadores apagados. 
+         * 
+         *  Además, si se levanta la bandera de error de sensor, se transiciona a dicho estado.
+         */
+        if (mef_var_amb_temp > (mef_var_amb_limite_inferior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2))
+            || mef_var_amb_temp_DHT11_sensor_error_flag)
+        {
+            set_relay_state(CALEFACCION, OFF);
+            est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
+        }
+
+        break;
+
+    case TEMP_AMB_ELEVADA:
 
         /**
          *  Cuando el nivel de temperatura caiga por debajo del límite inferior de la ventana de histeresis centrada en el límite 
-         *  superior del rango de temperatura correcto, se transiciona al estado con el refrigerador y calefactor apagados. Además, 
-         *  si se levanta la bandera de error de sensor, se transiciona a dicho estado.
+         *  superior del rango de temperatura correcto, se transiciona al estado con los actuadores apagados.
+         * 
+         *  Además, si se levanta la bandera de error de sensor, se transiciona a dicho estado.
          */
-        if (mef_var_amb_temp < (mef_var_amb_limite_superior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) || mef_var_amb_temp_DHT11_sensor_error_flag)
+        if (mef_var_amb_temp < (mef_var_amb_limite_superior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2))
+            || mef_var_amb_temp_DHT11_sensor_error_flag)
         {
-            set_relay_state(REFRIGERADOR_SOLUC, OFF);
+            set_relay_state(VENTILADORES, OFF);
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
@@ -181,12 +223,19 @@ void MEFControlVarAmb(void)
     }
 }
 
+
+
+/**
+ * @brief 
+ * 
+ * @param pvParameters 
+ */
 void vTaskVarAmbControl(void *pvParameters)
 {
     /**
-     * Variable que representa el estado de la MEF de jerarquía superior del algoritmo de control del temperatura de la solución.
+     * Variable que representa el estado de la MEF de jerarquía superior del algoritmo de control de las variables ambientales.
      */
-    static estado_MEF_principal_control_temp_soluc_t est_MEF_principal = ALGORITMO_CONTROL_TEMP_SOLUC;
+    static estado_MEF_principal_control_var_amb_t est_MEF_principal = ALGORITMO_CONTROL_VAR_AMB;
 
     while (1)
     {
@@ -194,22 +243,22 @@ void vTaskVarAmbControl(void *pvParameters)
          *  Se realiza un Notify Take a la espera de señales que indiquen:
          *
          *  -Que se debe pasar a modo MANUAL o modo AUTO.
-         *  -Que estando en modo MANUAL, se deba cambiar el estado del refrigerador o calefactor.
+         *  -Que estando en modo MANUAL, se deba cambiar el estado de los ventiladores o la calefacción.
          *
          *  Además, se le coloca un timeout para evaluar las transiciones de las MEFs periódicamente, en caso
-         *  de que no llegue ninguna de las señales mencionadas, y para controlar el nivel de temperatura que llega
-         *  desde el sensor de temperatura sumergible.
+         *  de que no llegue ninguna de las señales mencionadas, y para controlar los valores de sensado que
+         *  llegan.
          */
         ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
 
         switch (est_MEF_principal)
         {
 
-        case ALGORITMO_CONTROL_TEMP_SOLUC:
+        case ALGORITMO_CONTROL_VAR_AMB:
 
             /**
              *  En caso de que se levante la bandera de modo MANUAL, se debe transicionar a dicho estado,
-             *  en donde el accionamiento del calefactor y refrigerador será manejado por el usuario
+             *  en donde el accionamiento de los ventiladores y la calefacción será manejado por el usuario
              *  vía mensajes MQTT.
              */
             if (mef_var_amb_manual_mode_flag)
@@ -226,34 +275,38 @@ void vTaskVarAmbControl(void *pvParameters)
 
             /**
              *  En caso de que se baje la bandera de modo MANUAL, se debe transicionar nuevamente al estado
-             *  de modo AUTOMATICO, en donde se controla la temperatura de la solución a partir de los
-             *  valores del sensor de temperatura sumergible y el calefactor y refrigerador.
+             *  de modo AUTOMATICO, en donde se controlan las variables ambientales a partir de los
+             *  valores de los sensores DHT11 y de CO2 de las unidades secundarias y los ventiladores y
+             *  calefacción.
              */
             if (!mef_var_amb_manual_mode_flag)
             {
-                est_MEF_principal = ALGORITMO_CONTROL_TEMP_SOLUC;
+                est_MEF_principal = ALGORITMO_CONTROL_VAR_AMB;
                 break;
             }
 
             /**
-             *  Se obtiene el nuevo estado en el que deben estar el calefactor y refrigerador, y se accionan
+             *  Se obtiene el nuevo estado en el que deben estar los ventiladores y la calefacción, y se accionan
              *  los relés correspondientes.
              */
-            float manual_mode_refrigerador_state = -1;
-            float manual_mode_calefactor_state = -1;
-            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_AUM_TDS_STATE_MQTT_TOPIC, &manual_mode_refrigerador_state);
-            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_DISM_TDS_STATE_MQTT_TOPIC, &manual_mode_calefactor_state);
+            float manual_mode_ventiladores_state = -1;
+            float manual_mode_calefaccion_state = -1;
 
-            if (manual_mode_refrigerador_state == 0 || manual_mode_refrigerador_state == 1)
+            FALTA CAMBIAR LOS TOPICOS MQTT
+            
+            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_AUM_TDS_STATE_MQTT_TOPIC, &manual_mode_ventiladores_state);
+            mqtt_get_float_data_from_topic(MANUAL_MODE_VALVULA_DISM_TDS_STATE_MQTT_TOPIC, &manual_mode_calefaccion_state);
+
+            if (manual_mode_ventiladores_state == 0 || manual_mode_ventiladores_state == 1)
             {
-                set_relay_state(REFRIGERADOR_SOLUC, manual_mode_refrigerador_state);
-                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE REFRIGERADOR: %.0f", manual_mode_refrigerador_state);
+                set_relay_state(VENTILADORES, manual_mode_ventiladores_state);
+                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE VENTILADORES: %.0f", manual_mode_ventiladores_state);
             }
 
-            if (manual_mode_calefactor_state == 0 || manual_mode_calefactor_state == 1)
+            if (manual_mode_calefaccion_state == 0 || manual_mode_calefaccion_state == 1)
             {
-                set_relay_state(CALEFACTOR_SOLUC, manual_mode_calefactor_state);
-                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE CALEFACTOR: %.0f", manual_mode_calefactor_state);
+                set_relay_state(CALEFACCION, manual_mode_calefaccion_state);
+                ESP_LOGW(mef_var_amb_tag, "MANUAL MODE CALEFACCIÓN: %.0f", manual_mode_calefaccion_state);
             }
 
             break;
