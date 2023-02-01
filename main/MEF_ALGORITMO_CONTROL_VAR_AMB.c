@@ -142,7 +142,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "ON");
-                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = CO2_BAJO_O_HUM_AMB_ALTA;
@@ -167,7 +167,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "ON");
-                esp_mqtt_client_publish(Cliente_MQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = TEMP_AMB_BAJA;
@@ -192,7 +192,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "ON");
-                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = TEMP_AMB_ELEVADA;
@@ -221,7 +221,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
@@ -248,7 +248,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                esp_mqtt_client_publish(Cliente_MQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
@@ -275,7 +275,7 @@ void MEFControlVarAmb(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                esp_mqtt_client_publish(Cliente_MQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;

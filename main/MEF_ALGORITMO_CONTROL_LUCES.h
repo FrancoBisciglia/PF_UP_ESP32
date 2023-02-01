@@ -55,7 +55,7 @@ typedef enum {
 /**
  *  Tipo de variable que representa los tiempos de iluminación de las unidades secundarias, en horas y en ciclos de 24 horas.
  */
-typedef float light_time_t
+typedef float light_time_t;
 
 /*======================[EXTERNAL DATA DECLARATION]==============================*/
 

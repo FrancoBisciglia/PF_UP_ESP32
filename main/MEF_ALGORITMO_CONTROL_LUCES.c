@@ -40,9 +40,9 @@ static TaskHandle_t xMefLucesAlgoritmoControlTaskHandle = NULL;
 static esp_mqtt_client_handle_t MefLucesClienteMQTT = NULL;
 
 /* Tiempo de apagado de la bomba, en minutos. */
-static pump_time_t mef_luces_tiempo_luces_off = MEF_LUCES_TIEMPO_LUCES_OFF;
+static light_time_t mef_luces_tiempo_luces_off = MEF_LUCES_TIEMPO_LUCES_OFF;
 /* Tiempo de encendido de la bomba, en minutos. */
-static pump_time_t mef_luces_tiempo_luces_on = MEF_LUCES_TIEMPO_LUCES_ON;
+static light_time_t mef_luces_tiempo_luces_on = MEF_LUCES_TIEMPO_LUCES_ON;
 
 /* Bandera utilizada para controlar si se está o no en modo manual en el algoritmo de control de las luces. */
 static bool mef_luces_manual_mode_flag = 0;
@@ -98,7 +98,7 @@ static void MEFControlLuces(void)
         {
             char buffer[10];
             snprintf(buffer, sizeof(buffer), "%s", "OFF");
-            esp_mqtt_client_publish(Cliente_MQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
         }
 
         ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
@@ -128,7 +128,7 @@ static void MEFControlLuces(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "ON");
-                esp_mqtt_client_publish(Cliente_MQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             ESP_LOGW(mef_luces_tag, "LUCES ENCENDIDAS");
@@ -159,7 +159,7 @@ static void MEFControlLuces(void)
             {
                 char buffer[10];
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                esp_mqtt_client_publish(Cliente_MQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
             ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
@@ -267,7 +267,7 @@ static void vTaskLigthsControl(void *pvParameters)
                         snprintf(buffer, sizeof(buffer), "%s", "ON");
                     }
                     
-                    esp_mqtt_client_publish(Cliente_MQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                    esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
                 }
 
                 ESP_LOGW(mef_luces_tag, "MANUAL MODE LUCES: %.0f", manual_mode_luces_state);

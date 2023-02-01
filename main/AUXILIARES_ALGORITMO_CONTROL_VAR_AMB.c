@@ -40,28 +40,29 @@ static esp_mqtt_client_handle_t Cliente_MQTT = NULL;
 /* Lista de tópicos en donde las unidades secundarias publican los datos de temperatura ambiente. */
 static const char aux_control_var_amb_topicos_datos_temp[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
     TEMP_AMB_MQTT_TOPIC
-}
+};
 
 /* Lista de tópicos en donde las unidades secundarias publican los datos de humedad ambiente. */
 static const char aux_control_var_amb_topicos_datos_hum[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
     HUM_AMB_MQTT_TOPIC
-}
+};
 
 /* Lista de tópicos en donde las unidades secundarias publican los datos de CO2 ambiente. */
 static const char aux_control_var_amb_topicos_datos_co2[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
     CO2_AMB_MQTT_TOPIC
-}
+};
 
 //==================================| EXTERNAL DATA DEFINITION |==================================//
 
 //==================================| INTERNAL FUNCTIONS DECLARATION |==================================//
 
-void CallbackManualMode(void *pvParameters);
-void CallbackManualModeNewActuatorState(void *pvParameters);
-void CallbackGetTempAmbData(void *pvParameters);
-void CallbackGetHumAmbData(void *pvParameters);
-void CallbackGetCO2AmbData(void *pvParameters);
-void CallbackNewTempAmbSP(void *pvParameters);
+static void CallbackManualMode(void *pvParameters);
+static void CallbackManualModeNewActuatorState(void *pvParameters);
+static void CallbackGetTempAmbData(void *pvParameters);
+static void CallbackGetHumAmbData(void *pvParameters);
+static void CallbackGetCO2AmbData(void *pvParameters);
+static void CallbackNewTempAmbSP(void *pvParameters);
+static void SortData(float *data_array, unsigned int cantidad_datos);
 
 //==================================| INTERNAL FUNCTIONS DEFINITION |==================================//
 
@@ -72,7 +73,7 @@ void CallbackNewTempAmbSP(void *pvParameters);
  * 
  * @param pvParameters 
  */
-void CallbackManualMode(void *pvParameters)
+static void CallbackManualMode(void *pvParameters)
 {
     /**
      *  Se obtiene el mensaje del tópico de modo MANUAL o AUTO.
@@ -113,7 +114,7 @@ void CallbackManualMode(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackManualModeNewActuatorState(void *pvParameters)
+static void CallbackManualModeNewActuatorState(void *pvParameters)
 {
     /**
      * Se le envía un Task Notify a la tarea de la MEF de control de variables ambientales.
@@ -129,7 +130,7 @@ void CallbackManualModeNewActuatorState(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackGetTempAmbData(void *pvParameters)
+static void CallbackGetTempAmbData(void *pvParameters)
 {
     /**
      *  Se inicializa un array dinámico en donde se irán guardando los datos de
@@ -184,7 +185,7 @@ void CallbackGetTempAmbData(void *pvParameters)
      */
     DHT11_sensor_temp_t mediana_temperaturas_unidades_sec;
 
-    if ( cantidad_datos_correctos % 2 = = 0 )  
+    if ( (cantidad_datos_correctos % 2) == 0 )  
         mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
@@ -205,7 +206,7 @@ void CallbackGetTempAmbData(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackGetHumAmbData(void *pvParameters)
+static void CallbackGetHumAmbData(void *pvParameters)
 {
     /**
      *  Se inicializa un array dinámico en donde se irán guardando los datos de
@@ -260,7 +261,7 @@ void CallbackGetHumAmbData(void *pvParameters)
      */
     DHT11_sensor_hum_t mediana_humedades_unidades_sec;
 
-    if ( cantidad_datos_correctos % 2 = = 0 )  
+    if ( (cantidad_datos_correctos % 2) == 0 )  
         mediana_humedades_unidades_sec = (humedades_unidades_sec[cantidad_datos_correctos / 2] + humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
@@ -281,7 +282,7 @@ void CallbackGetHumAmbData(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackGetCO2AmbData(void *pvParameters)
+static void CallbackGetCO2AmbData(void *pvParameters)
 {
     /**
      *  Se inicializa un array dinámico en donde se irán guardando los datos de
@@ -336,7 +337,7 @@ void CallbackGetCO2AmbData(void *pvParameters)
      */
     CO2_sensor_ppm_t mediana_nivel_CO2_unidades_sec;
 
-    if ( cantidad_datos_correctos % 2 = = 0 )  
+    if ( (cantidad_datos_correctos % 2) == 0 )  
         mediana_nivel_CO2_unidades_sec = (nivel_CO2_unidades_sec[cantidad_datos_correctos / 2] + nivel_CO2_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
@@ -357,7 +358,7 @@ void CallbackGetCO2AmbData(void *pvParameters)
  * @param data_array    El array de datos a ordenar.
  * @param cantidad_datos    Cantidad de datos que posee el array.
  */
-void SortData(float *data_array, unsigned int cantidad_datos)
+static void SortData(float *data_array, unsigned int cantidad_datos)
 {
     float temp;
 
@@ -389,7 +390,7 @@ void SortData(float *data_array, unsigned int cantidad_datos)
  * 
  * @param pvParameters 
  */
-void CallbackNewTempAmbSP(void *pvParameters)
+static void CallbackNewTempAmbSP(void *pvParameters)
 {
     /**
      *  Se obtiene el nuevo valor de SP de temperatura ambiente.
@@ -456,13 +457,13 @@ esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
         [2].topic_name = MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC,
         [2].topic_function_cb = CallbackManualModeNewActuatorState,
         [3].topic_name = MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC,
-        [3].topic_function_cb = CallbackManualModeNewActuatorState
+        [3].topic_function_cb = CallbackManualModeNewActuatorState,
         [4].topic_name = TEMP_AMB_MQTT_TOPIC,
-        [4].topic_function_cb = CallbackGetTempAmbData
+        [4].topic_function_cb = CallbackGetTempAmbData,
         [5].topic_name = HUM_AMB_MQTT_TOPIC,
-        [5].topic_function_cb = CallbackGetHumAmbData
+        [5].topic_function_cb = CallbackGetHumAmbData,
         [6].topic_name = CO2_AMB_MQTT_TOPIC,
-        [6].topic_function_cb = CallbackGetCO2AmbData
+        [6].topic_function_cb = CallbackGetCO2AmbData,
     };
 
     /**

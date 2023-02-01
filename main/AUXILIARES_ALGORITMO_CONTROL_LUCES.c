@@ -42,10 +42,10 @@ static TimerHandle_t xTimerLuces = NULL;
 
 //==================================| INTERNAL FUNCTIONS DECLARATION |==================================//
 
-void vLucesTimerCallback( TimerHandle_t pxTimer );
-void CallbackManualMode(void *pvParameters);
-void CallbackManualModeNewActuatorState(void *pvParameters);
-void CallbackNewLightsOnTime(void *pvParameters);
+static void vLucesTimerCallback( TimerHandle_t pxTimer );
+static void CallbackManualMode(void *pvParameters);
+static void CallbackManualModeNewActuatorState(void *pvParameters);
+static void CallbackNewLightsOnTime(void *pvParameters);
 
 //==================================| INTERNAL FUNCTIONS DEFINITION |==================================//
 
@@ -87,7 +87,7 @@ static void vLucesTimerCallback( TimerHandle_t pxTimer )
  * 
  * @param pvParameters 
  */
-void CallbackManualMode(void *pvParameters)
+static void CallbackManualMode(void *pvParameters)
 {
     /**
      *  Se obtiene el mensaje del tópico de modo MANUAL o AUTO.
@@ -126,7 +126,7 @@ void CallbackManualMode(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackManualModeNewActuatorState(void *pvParameters)
+static void CallbackManualModeNewActuatorState(void *pvParameters)
 {
     /**
      * Se le envía un Task Notify a la tarea de la MEF de control de las luces.
@@ -142,10 +142,10 @@ void CallbackManualModeNewActuatorState(void *pvParameters)
  * 
  * @param pvParameters 
  */
-void CallbackNewLightsOnTime(void *pvParameters)
+static void CallbackNewLightsOnTime(void *pvParameters)
 {
     /**
-     *  Se obtiene el nuevo valor de tiempo de encendido de las luces.
+     *  Se obtiene el nuevo valor de tiempo de encendido de las luces, en horas.
      */
     light_time_t tiempo_on_luces = 0;
     mqtt_get_float_data_from_topic(NEW_LIGHTS_ON_TIME_MQTT_TOPIC, &tiempo_on_luces);
@@ -153,9 +153,9 @@ void CallbackNewLightsOnTime(void *pvParameters)
     ESP_LOGI(aux_control_luces_tag, "NUEVO TIEMPO ENCENDIDO LUCES: %.0f", tiempo_on_luces);
 
     /**
-     *  Se actualiza el nuevo tiempo de encendido en la MEF.
+     *  Se actualiza el nuevo tiempo de encendido en la MEF, en horas.
      */
-    mef_bombeo_set_pump_on_time_min(tiempo_on_luces);
+    mef_luces_set_lights_on_time_hours(tiempo_on_luces);
 }
 
 //==================================| EXTERNAL FUNCTIONS DEFINITION |==================================//
