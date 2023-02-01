@@ -1,11 +1,11 @@
 /*
 
-    Funcionalidades del algoritmo de control de bombeo de la solución nutritiva.
+    Funcionalidades del algoritmo de control de las luces de las unidades secundarias.
 
 */
 
-#ifndef AUXILIARES_ALGORITMO_CONTROL_BOMBEO_SOLUCION_H_
-#define AUXILIARES_ALGORITMO_CONTROL_BOMBEO_SOLUCION_H_
+#ifndef AUXILIARES_ALGORITMO_CONTROL_LUCES_H_
+#define AUXILIARES_ALGORITMO_CONTROL_LUCES_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,22 +24,33 @@ extern "C" {
 /**
  *  Definición de los tópicos MQTT a suscribirse.
  */
-#define NEW_PUMP_ON_TIME_MQTT_TOPIC   "/Tiempos/Bomba/Tiempo_encendido"
-#define NEW_PUMP_OFF_TIME_MQTT_TOPIC   "/Tiempos/Bomba/Tiempo_apagado"
-#define MANUAL_MODE_MQTT_TOPIC  "/BombeoSoluc/Modo"
-#define MANUAL_MODE_PUMP_STATE_MQTT_TOPIC    "/BombeoSoluc/Modo_Manual/Bomba"
-#define PUMP_STATE_MQTT_TOPIC   "Actuadores/Bomba"
+#define NEW_LIGHTS_ON_TIME_MQTT_TOPIC   "/Tiempos/Luces/Tiempo_encendido"
+#define MANUAL_MODE_MQTT_TOPIC  "/Luces/Modo"
+#define MANUAL_MODE_LIGHTS_STATE_MQTT_TOPIC    "/Luces/Modo_Manual/Luces"
+#define LIGHTS_STATE_MQTT_TOPIC   "Actuadores/Luces"
+
+/**
+ *  Constante de conversión de horas a ms:
+ * 
+ *  -1 hora = 60 min
+ *  -1 min = 60 seg
+ *  -1 seg = 1000 ms
+ * 
+ *  => 1 hora = 60*60*1000 = 3.600.000 ms
+ * 
+ */
+#define HOURS_TO_MS 3600000
 
 /*======================[EXTERNAL DATA DECLARATION]==============================*/
 
 /*=====================[EXTERNAL FUNCTIONS DECLARATION]=========================*/
 
-esp_err_t aux_control_bombeo_init(esp_mqtt_client_handle_t mqtt_client);
-TimerHandle_t aux_control_bombeo_get_timer_handle(void);
+esp_err_t aux_control_luces_init(esp_mqtt_client_handle_t mqtt_client);
+TimerHandle_t aux_control_luces_get_timer_handle(void);
 
 /*==================[END OF FILE]============================================*/
 #ifdef __cplusplus
 }
 #endif
 
-#endif // AUXILIARES_ALGORITMO_CONTROL_BOMBEO_SOLUCION_H_
+#endif // AUXILIARES_ALGORITMO_CONTROL_LUCES_H_

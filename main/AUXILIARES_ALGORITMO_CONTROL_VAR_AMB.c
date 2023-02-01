@@ -23,6 +23,7 @@
 
 #include "MQTT_PUBL_SUSCR.h"
 #include "DHT11_SENSOR.h"
+#include "CO2_SENSOR.h"
 #include "MEF_ALGORITMO_CONTROL_VAR_AMB.h"
 #include "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.h"
 
