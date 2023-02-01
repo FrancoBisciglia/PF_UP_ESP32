@@ -30,6 +30,7 @@ extern "C" {
 #define MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC   "/VarAmb/Modo_Manual/Calefaccion"
 #define VENTILADORES_STATE_MQTT_TOPIC   "Actuadores/Ventiladores"
 #define CALEFACCION_STATE_MQTT_TOPIC   "Actuadores/Calefaccion"
+
 #define CO2_AMB_MQTT_TOPIC "Sensores ambientales/CO2"
 #define TEMP_AMB_MQTT_TOPIC "Sensores ambientales/Temperatura"
 #define HUM_AMB_MQTT_TOPIC "Sensores ambientales/Humedad"
@@ -40,6 +41,9 @@ extern "C" {
 #define CODIGO_ERROR_SENSOR_DHT11_HUM_AMB -400
 /* Código de error que se carga en el valor de CO2 al detectar un error de sensado. */
 #define CODIGO_ERROR_SENSOR_CO2 -300
+
+/* Cantidad de unidades secundarias presentes en el sistema. */
+#define AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS 1
 
 /*======================[EXTERNAL DATA DECLARATION]==============================*/
 

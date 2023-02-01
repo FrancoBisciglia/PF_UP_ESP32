@@ -36,8 +36,20 @@ static const char *aux_control_var_amb_tag = "AUXILIAR_CONTROL_VAR_AMB";
 /* Handle del cliente MQTT. */
 static esp_mqtt_client_handle_t Cliente_MQTT = NULL;
 
-/* Cantidad de unidades secundarias presentes en el sistema. */
-unsigned int aux_control_var_amb_cantidad_unidades_sec = 0;
+/* Lista de tópicos en donde las unidades secundarias publican los datos de temperatura ambiente. */
+static const char aux_control_var_amb_topicos_datos_temp[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
+    TEMP_AMB_MQTT_TOPIC
+}
+
+/* Lista de tópicos en donde las unidades secundarias publican los datos de humedad ambiente. */
+static const char aux_control_var_amb_topicos_datos_hum[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
+    HUM_AMB_MQTT_TOPIC
+}
+
+/* Lista de tópicos en donde las unidades secundarias publican los datos de CO2 ambiente. */
+static const char aux_control_var_amb_topicos_datos_co2[AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS][100] = {
+    CO2_AMB_MQTT_TOPIC
+}
 
 //==================================| EXTERNAL DATA DEFINITION |==================================//
 
@@ -135,10 +147,10 @@ void CallbackGetTempAmbData(void *pvParameters)
     /**
      *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
      */
-    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
+    for(int i = 1; i <= AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS; i++)
     {
         DHT11_sensor_temp_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
-        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+        mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_temp[i-1], &buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
@@ -211,10 +223,10 @@ void CallbackGetHumAmbData(void *pvParameters)
     /**
      *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
      */
-    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
+    for(int i = 1; i <= AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS; i++)
     {
         DHT11_sensor_hum_t buffer = CODIGO_ERROR_SENSOR_DHT11_HUM_AMB;
-        mqtt_get_float_data_from_topic(HUM_AMB_MQTT_TOPIC, &buffer);
+        mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_hum[i-1], &buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
@@ -287,14 +299,10 @@ void CallbackGetCO2AmbData(void *pvParameters)
     /**
      *  Se obtienen los datos de temperatura ambiente de cada una de las unidades secundarias.
      */
-    for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
+    for(int i = 1; i <= AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS; i++)
     {
         CO2_sensor_ppm_t buffer = CODIGO_ERROR_SENSOR_CO2;
-
-        ACA DEBERIA HACER QUE DESDE LA FUNCION MQTT ME PASEN COMO ARGUMENTO EL NOMBRE DEL TOPICO DEL CUAL
-        LLEGA EL DATO
-        
-        mqtt_get_float_data_from_topic(CO2_AMB_MQTT_TOPIC, &buffer);
+        mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_co2[i-1], &buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
@@ -425,17 +433,12 @@ void CallbackNewTempAmbSP(void *pvParameters)
  * @param mqtt_client   Handle del cliente MQTT.
  * @return esp_err_t 
  */
-esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client, unsigned int cantidad_unidades_sec)
+esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
 {
     /**
      *  Copiamos el handle del cliente MQTT en la variable interna.
      */
     Cliente_MQTT = mqtt_client;
-
-    /**
-     *  Copiamos la cantidad de unidades secundarias del sistema.
-     */
-    aux_control_var_amb_cantidad_unidades_sec = cantidad_unidades_sec;
 
     //=======================| TÓPICOS MQTT |=======================//
 
