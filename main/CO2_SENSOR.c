@@ -55,7 +55,7 @@ CO2SensorCallbackFunction CO2SensorCallback = NULL;
 static bool CO2_interr_flag = 0;
 
 /* Variable en donde se guarda el valor de CO2 obtenido por PWM. */
-static unsigned long CO2_ppm_pwm = 0;
+static CO2_sensor_ppm_t CO2_ppm_pwm = 0;
 
 /* Variable utilizada para controlar el tiempo de calentamiento del sensor de CO2. */
 int64_t CO2_warm_up_time_start = 0;

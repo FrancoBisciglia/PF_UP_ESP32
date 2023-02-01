@@ -26,7 +26,7 @@ extern "C" {
 #define CO2_SENSOR_MEASURE_ERROR -300 
 
 typedef gpio_num_t CO2_sensor_pwm_pin_t;
-typedef unsigned long CO2_sensor_ppm_t;
+typedef float CO2_sensor_ppm_t;
 
 /**
  *  @brief  Puntero a función que será utilizado para ejecutar la función que se pase

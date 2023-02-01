@@ -48,7 +48,7 @@ void CallbackManualModeNewActuatorState(void *pvParameters);
 void CallbackGetTempAmbData(void *pvParameters);
 void CallbackGetHumAmbData(void *pvParameters);
 void CallbackGetCO2AmbData(void *pvParameters);
-void CallbackNewTempSolucSP(void *pvParameters);
+void CallbackNewTempAmbSP(void *pvParameters);
 
 //==================================| INTERNAL FUNCTIONS DEFINITION |==================================//
 
@@ -204,7 +204,7 @@ void CallbackGetHumAmbData(void *pvParameters)
     /**
      *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
      *  que son considerados como correctos, esto es, que no tienen el código de error 
-     *  "CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB".
+     *  "CODIGO_ERROR_SENSOR_DHT11_HUM_AMB".
      */
     unsigned int cantidad_datos_correctos = 0;
 
@@ -213,14 +213,14 @@ void CallbackGetHumAmbData(void *pvParameters)
      */
     for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
     {
-        DHT11_sensor_hum_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
-        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+        DHT11_sensor_hum_t buffer = CODIGO_ERROR_SENSOR_DHT11_HUM_AMB;
+        mqtt_get_float_data_from_topic(HUM_AMB_MQTT_TOPIC, &buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
          *  no se considera dicho dato para el posterior cálculo de la mediana.
          */
-        if(buffer != CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB)
+        if(buffer != CODIGO_ERROR_SENSOR_DHT11_HUM_AMB)
         {
             if(humedades_unidades_sec == NULL)
             {
@@ -245,26 +245,26 @@ void CallbackGetHumAmbData(void *pvParameters)
     /**
      *  Se obtiene la mediana de los datos recopilados.
      */
-    DHT11_sensor_hum_t mediana_temperaturas_unidades_sec;
+    DHT11_sensor_hum_t mediana_humedades_unidades_sec;
 
     if ( cantidad_datos_correctos % 2 = = 0 )  
-        mediana_temperaturas_unidades_sec = (humedades_unidades_sec[cantidad_datos_correctos / 2] + humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+        mediana_humedades_unidades_sec = (humedades_unidades_sec[cantidad_datos_correctos / 2] + humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
-        mediana_temperaturas_unidades_sec = humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+        mediana_humedades_unidades_sec = humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1];
 
 
     /**
      *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
      */
-    mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
+    mef_var_amb_set_hum_amb_value(mediana_humedades_unidades_sec);
 }
 
 
 
 /**
  *  @brief  Función de callback que se ejecuta cuando se completa una nueva medición de
- *          temperatura de alguno de los sensores DHT11 de las unidades secundarias.
+ *          CO2 de alguno de los sensores de CO2 de las unidades secundarias.
  * 
  * @param pvParameters 
  */
@@ -272,15 +272,15 @@ void CallbackGetCO2AmbData(void *pvParameters)
 {
     /**
      *  Se inicializa un array dinámico en donde se irán guardando los datos de
-     *  temperatura ambiente sensados por cada una de las unidades secundarias,
+     *  CO2 ambiente sensados por cada una de las unidades secundarias,
      *  para luego obtener la mediana del mismo.
      */
-    DHT11_sensor_temp_t *temperaturas_unidades_sec = NULL;
+    CO2_sensor_ppm_t *nivel_CO2_unidades_sec = NULL;
 
     /**
      *  Variable que representa la cantidad de datos que llegan desde las unidades secundarias
      *  que son considerados como correctos, esto es, que no tienen el código de error 
-     *  "CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB".
+     *  "CODIGO_ERROR_SENSOR_CO2".
      */
     unsigned int cantidad_datos_correctos = 0;
 
@@ -289,26 +289,30 @@ void CallbackGetCO2AmbData(void *pvParameters)
      */
     for(int i = 1; i < aux_control_var_amb_cantidad_unidades_sec; i++)
     {
-        DHT11_sensor_temp_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
-        mqtt_get_float_data_from_topic(TEMP_AMB_MQTT_TOPIC, &buffer);
+        CO2_sensor_ppm_t buffer = CODIGO_ERROR_SENSOR_CO2;
+
+        ACA DEBERIA HACER QUE DESDE LA FUNCION MQTT ME PASEN COMO ARGUMENTO EL NOMBRE DEL TOPICO DEL CUAL
+        LLEGA EL DATO
+        
+        mqtt_get_float_data_from_topic(CO2_AMB_MQTT_TOPIC, &buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
          *  no se considera dicho dato para el posterior cálculo de la mediana.
          */
-        if(buffer != CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB)
+        if(buffer != CODIGO_ERROR_SENSOR_CO2)
         {
-            if(temperaturas_unidades_sec == NULL)
+            if(nivel_CO2_unidades_sec == NULL)
             {
-                temperaturas_unidades_sec = calloc(1, sizeof(DHT11_sensor_temp_t));
+                nivel_CO2_unidades_sec = calloc(1, sizeof(CO2_sensor_ppm_t));
             }
 
             else
             {
-                temperaturas_unidades_sec = (DHT11_sensor_temp_t*) realloc(temperaturas_unidades_sec, cantidad_datos_correctos * sizeof(DHT11_sensor_temp_t));
+                nivel_CO2_unidades_sec = (CO2_sensor_ppm_t*) realloc(nivel_CO2_unidades_sec, cantidad_datos_correctos * sizeof(CO2_sensor_ppm_t));
             }
 
-            temperaturas_unidades_sec[cantidad_datos_correctos] = buffer;
+            nivel_CO2_unidades_sec[cantidad_datos_correctos] = buffer;
             cantidad_datos_correctos++;
         }
     }
@@ -316,24 +320,24 @@ void CallbackGetCO2AmbData(void *pvParameters)
     /**
      *  Se ordenan los datos obtenidos de menor a mayor.
      */
-    SortData(temperaturas_unidades_sec, cantidad_datos_correctos);
+    SortData(nivel_CO2_unidades_sec, cantidad_datos_correctos);
 
     /**
      *  Se obtiene la mediana de los datos recopilados.
      */
-    DHT11_sensor_temp_t mediana_temperaturas_unidades_sec;
+    CO2_sensor_ppm_t mediana_nivel_CO2_unidades_sec;
 
     if ( cantidad_datos_correctos % 2 = = 0 )  
-        mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+        mediana_nivel_CO2_unidades_sec = (nivel_CO2_unidades_sec[cantidad_datos_correctos / 2] + nivel_CO2_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
     
     else  
-        mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+        mediana_nivel_CO2_unidades_sec = nivel_CO2_unidades_sec[(cantidad_datos_correctos / 2) + 1];
 
 
     /**
      *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
      */
-    mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
+    mef_var_amb_set_CO2_amb_value(mediana_nivel_CO2_unidades_sec);
 }
 
 
@@ -372,79 +376,66 @@ void SortData(float *data_array, unsigned int cantidad_datos)
 
 /**
  *  @brief  Función de callback que se ejecuta cuando llega un mensaje al tópico MQTT
- *          correspondiente con un nuevo valor de set point de temperatura de la solución.
+ *          correspondiente con un nuevo valor de set point de temperatura ambiente.
  * 
  * @param pvParameters 
  */
-void CallbackNewTempSolucSP(void *pvParameters)
+void CallbackNewTempAmbSP(void *pvParameters)
 {
     /**
-     *  Se obtiene el nuevo valor de SP de temperatura de solución.
+     *  Se obtiene el nuevo valor de SP de temperatura ambiente.
      */
-    DS18B20_sensor_temp_t SP_temp_soluc = 0;
-    mqtt_get_float_data_from_topic(NEW_TEMP_SP_MQTT_TOPIC, &SP_temp_soluc);
+    DHT11_sensor_temp_t SP_temp_amb = 0;
+    mqtt_get_float_data_from_topic(NEW_TEMP_SP_MQTT_TOPIC, &SP_temp_amb);
 
-    ESP_LOGI(aux_control_var_amb_tag, "NUEVO SP: %.3f", SP_temp_soluc);
+    ESP_LOGI(aux_control_var_amb_tag, "NUEVO SP: %.3f", SP_temp_amb);
 
     /**
      *  A partir del valor de SP de temperatura, se calculan los límites superior e inferior
-     *  utilizados por el algoritmo de control de temperatura de solución, teniendo en cuenta el valor
+     *  utilizados por el algoritmo de control de variables ambientales, teniendo en cuenta el valor
      *  del delta de temperatura que se estableció.
      * 
      *  EJEMPLO:
      * 
-     *  SP_TEMP_SOLUC = 25 °C
+     *  SP_temp_amb = 25 °C
      *  DELTA_TEMP = 2 °C
      * 
-     *  LIM_SUPERIOR_TEMP_SOLUC = SP_TEMP_SOLUC + DELTA_TEMP = 27 °C
-     *  LIM_INFERIOR_TEMP_SOLUC = SP_TEMP_SOLUC - DELTA_TEMP = 23 °C
+     *  LIM_SUPERIOR_TEMP_AMB = SP_temp_amb + DELTA_TEMP = 27 °C
+     *  LIM_INFERIOR_TEMP_AMB = SP_temp_amb - DELTA_TEMP = 23 °C
      */
-    DS18B20_sensor_temp_t limite_inferior_temp_soluc, limite_superior_temp_soluc;
-    limite_inferior_temp_soluc = SP_temp_soluc - mef_temp_soluc_get_delta_temp();
-    limite_superior_temp_soluc = SP_temp_soluc + mef_temp_soluc_get_delta_temp();
+    DHT11_sensor_temp_t limite_inferior_temp_amb, limite_superior_temp_amb;
+    limite_inferior_temp_amb = SP_temp_amb - mef_var_amb_get_delta_temp();
+    limite_superior_temp_amb = SP_temp_amb + mef_var_amb_get_delta_temp();
 
     /**
-     *  Se actualizan los límites superior e inferior de temperatura de solución en la MEF.
+     *  Se actualizan los límites superior e inferior de temperatura ambiente en la MEF.
      */
-    mef_temp_soluc_set_temp_control_limits(limite_inferior_temp_soluc, limite_superior_temp_soluc);
+    mef_var_amb_set_temp_control_limits(limite_inferior_temp_amb, limite_superior_temp_amb);
 
-    ESP_LOGI(aux_control_var_amb_tag, "LIMITE INFERIOR: %.3f", limite_inferior_temp_soluc);
-    ESP_LOGI(aux_control_var_amb_tag, "LIMITE SUPERIOR: %.3f", limite_superior_temp_soluc);
+    ESP_LOGI(aux_control_var_amb_tag, "LIMITE INFERIOR TEMP AMB: %.3f", limite_inferior_temp_amb);
+    ESP_LOGI(aux_control_var_amb_tag, "LIMITE SUPERIOR TEMP AMB: %.3f", limite_superior_temp_amb);
 }
 
 //==================================| EXTERNAL FUNCTIONS DEFINITION |==================================//
 
 /**
  * @brief   Función para inicializar el módulo de funciones auxiliares del algoritmo de control de
- *          temperatura de solución. 
+ *          variables ambientales. 
  * 
  * @param mqtt_client   Handle del cliente MQTT.
  * @return esp_err_t 
  */
-esp_err_t aux_control_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
+esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client, unsigned int cantidad_unidades_sec)
 {
     /**
      *  Copiamos el handle del cliente MQTT en la variable interna.
      */
     Cliente_MQTT = mqtt_client;
 
-    //=======================| INIT SENSOR DS18B20 |=======================//
-
     /**
-     *  Se inicializa el sensor DS18B20. En caso de detectar error,
-     *  se retorna con error.
+     *  Copiamos la cantidad de unidades secundarias del sistema.
      */
-    if(DS18B20_sensor_init(GPIO_PIN_CO2_SENSOR) != ESP_OK)
-    {
-        ESP_LOGE(aux_control_var_amb_tag, "FAILED TO INITIALIZE DS18B20 SENSOR.");
-        return ESP_FAIL;
-    }
-
-    /**
-     *  Se asigna la función callback que será llamada al completarse una medición del
-     *  sensor de temperatura sumergible.
-     */
-    DS18B20_callback_function_on_new_measurment(CallbackGetTempSolucData);
+    aux_control_var_amb_cantidad_unidades_sec = cantidad_unidades_sec;
 
     //=======================| TÓPICOS MQTT |=======================//
 
@@ -455,19 +446,25 @@ esp_err_t aux_control_temp_soluc_init(esp_mqtt_client_handle_t mqtt_client)
      */
     mqtt_topic_t list_of_topics[] = {
         [0].topic_name = NEW_TEMP_SP_MQTT_TOPIC,
-        [0].topic_function_cb = CallbackNewTempSolucSP,
+        [0].topic_function_cb = CallbackNewTempAmbSP,
         [1].topic_name = MANUAL_MODE_MQTT_TOPIC,
         [1].topic_function_cb = CallbackManualMode,
-        [2].topic_name = MANUAL_MODE_REFRIGERADOR_STATE_MQTT_TOPIC,
+        [2].topic_name = MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC,
         [2].topic_function_cb = CallbackManualModeNewActuatorState,
-        [3].topic_name = MANUAL_MODE_CALEFACTOR_STATE_MQTT_TOPIC,
+        [3].topic_name = MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC,
         [3].topic_function_cb = CallbackManualModeNewActuatorState
+        [4].topic_name = TEMP_AMB_MQTT_TOPIC,
+        [4].topic_function_cb = CallbackGetTempAmbData
+        [5].topic_name = HUM_AMB_MQTT_TOPIC,
+        [5].topic_function_cb = CallbackGetHumAmbData
+        [6].topic_name = CO2_AMB_MQTT_TOPIC,
+        [6].topic_function_cb = CallbackGetCO2AmbData
     };
 
     /**
      *  Se realiza la suscripción a los tópicos MQTT y la asignación de callbacks correspondientes.
      */
-    if(mqtt_suscribe_to_topics(list_of_topics, 4, Cliente_MQTT, 0) != ESP_OK)
+    if(mqtt_suscribe_to_topics(list_of_topics, 7, Cliente_MQTT, 0) != ESP_OK)
     {
         ESP_LOGE(aux_control_var_amb_tag, "FAILED TO SUSCRIBE TO MQTT TOPICS.");
         return ESP_FAIL;
