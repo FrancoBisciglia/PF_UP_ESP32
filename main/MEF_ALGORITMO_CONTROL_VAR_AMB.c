@@ -143,7 +143,7 @@ void MEFControlVarAmb(void)
          */
         if ((mef_var_amb_CO2 < (mef_var_amb_limite_inferior_CO2 - (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
             || mef_var_amb_CO2 > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
-            && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag))
+            && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag)
         {
             set_relay_state(VENTILADORES, ON);
             /**
