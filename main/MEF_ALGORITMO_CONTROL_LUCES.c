@@ -308,7 +308,7 @@ esp_err_t mef_luces_init(esp_mqtt_client_handle_t mqtt_client)
             "vTaskLigthsControl",
             4096,
             NULL,
-            2,
+            5,
             &xMefLucesAlgoritmoControlTaskHandle);
         
         /**

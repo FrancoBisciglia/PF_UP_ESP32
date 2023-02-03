@@ -115,6 +115,17 @@ void MEFControlVarAmb(void)
         set_relay_state(VENTILADORES, OFF);
         set_relay_state(CALEFACCION, OFF);
 
+        /**
+         *  Se publica el nuevo estado de la calefacción y ventiladores en los tópicos MQTT correspondientes.
+         */
+        if(mqtt_check_connection())
+        {
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%s", "OFF");
+            esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+            esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+        }
+
         est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         mef_var_amb_reset_transition_flag_control_var_amb = 0;
     }
@@ -132,7 +143,7 @@ void MEFControlVarAmb(void)
          */
         if ((mef_var_amb_CO2 < (mef_var_amb_limite_inferior_CO2 - (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
             || mef_var_amb_CO2 > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
-            && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
+            && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(VENTILADORES, ON);
             /**
@@ -211,7 +222,7 @@ void MEFControlVarAmb(void)
         if ((mef_var_amb_CO2 > (mef_var_amb_limite_inferior_CO2 + (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
             || mef_var_amb_CO2 < (mef_var_amb_limite_superior_hum - (mef_var_amb_ancho_ventana_hist_hum / 2))
             || mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
-            && (!mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
+            && (mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(VENTILADORES, OFF);
             /**
@@ -361,12 +372,52 @@ void vTaskVarAmbControl(void *pvParameters)
             if (manual_mode_ventiladores_state == 0 || manual_mode_ventiladores_state == 1)
             {
                 set_relay_state(VENTILADORES, manual_mode_ventiladores_state);
+                /**
+                 *  Se publica el nuevo estado de los ventiladores en el tópico MQTT correspondiente.
+                 */
+                if(mqtt_check_connection())
+                {
+                    char buffer[10];
+
+                    if(manual_mode_ventiladores_state == 0)
+                    {
+                        snprintf(buffer, sizeof(buffer), "%s", "OFF");    
+                    }
+
+                    else if(manual_mode_ventiladores_state == 1)
+                    {
+                        snprintf(buffer, sizeof(buffer), "%s", "ON");
+                    }
+                    
+                    esp_mqtt_client_publish(MefLucesClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                }
+
                 ESP_LOGW(mef_var_amb_tag, "MANUAL MODE VENTILADORES: %.0f", manual_mode_ventiladores_state);
             }
 
             if (manual_mode_calefaccion_state == 0 || manual_mode_calefaccion_state == 1)
             {
                 set_relay_state(CALEFACCION, manual_mode_calefaccion_state);
+                /**
+                 *  Se publica el nuevo estado de la calefacción en el tópico MQTT correspondiente.
+                 */
+                if(mqtt_check_connection())
+                {
+                    char buffer[10];
+
+                    if(manual_mode_calefaccion_state == 0)
+                    {
+                        snprintf(buffer, sizeof(buffer), "%s", "OFF");    
+                    }
+
+                    else if(manual_mode_calefaccion_state == 1)
+                    {
+                        snprintf(buffer, sizeof(buffer), "%s", "ON");
+                    }
+                    
+                    esp_mqtt_client_publish(MefLucesClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                }
+
                 ESP_LOGW(mef_var_amb_tag, "MANUAL MODE CALEFACCIÓN: %.0f", manual_mode_calefaccion_state);
             }
 
@@ -403,7 +454,7 @@ esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
             "vTaskVarAmbControl",
             4096,
             NULL,
-            3,
+            2,
             &xMefVarAmbAlgoritmoControlTaskHandle);
 
         /**
