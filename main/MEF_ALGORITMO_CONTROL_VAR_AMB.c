@@ -389,7 +389,7 @@ void vTaskVarAmbControl(void *pvParameters)
                         snprintf(buffer, sizeof(buffer), "%s", "ON");
                     }
                     
-                    esp_mqtt_client_publish(MefLucesClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
                 }
 
                 ESP_LOGW(mef_var_amb_tag, "MANUAL MODE VENTILADORES: %.0f", manual_mode_ventiladores_state);
@@ -415,7 +415,7 @@ void vTaskVarAmbControl(void *pvParameters)
                         snprintf(buffer, sizeof(buffer), "%s", "ON");
                     }
                     
-                    esp_mqtt_client_publish(MefLucesClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
                 }
 
                 ESP_LOGW(mef_var_amb_tag, "MANUAL MODE CALEFACCIÓN: %.0f", manual_mode_calefaccion_state);

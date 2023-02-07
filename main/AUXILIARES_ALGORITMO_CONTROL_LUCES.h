@@ -39,7 +39,8 @@ extern "C" {
  *  => 1 hora = 60*60*1000 = 3.600.000 ms
  * 
  */
-#define HOURS_TO_MS 3600000
+//#define HOURS_TO_MS 3600000
+#define HOURS_TO_MS 1000
 
 /*======================[EXTERNAL DATA DECLARATION]==============================*/
 

@@ -21,8 +21,8 @@ extern "C" {
 /*============================[DEFINES AND MACROS]=====================================*/
 
 /* Tiempos estándar de encendido y apagado de las luces de las unidades secundarias, en horas y en ciclos de 24 horas. */
-#define MEF_LUCES_TIEMPO_LUCES_ON  12
-#define MEF_LUCES_TIEMPO_LUCES_OFF  12
+#define MEF_LUCES_TIEMPO_LUCES_ON  2
+#define MEF_LUCES_TIEMPO_LUCES_OFF  2
 
 /**
  *  Enumeración correspondiente a los actuadores del control de las luces de las unidades secundarias.
@@ -30,7 +30,7 @@ extern "C" {
  *  NOTA: CUANDO SE SEPA BIEN QUÉ RELÉ SE ASOCIA A QUÉ ACTUADOR, MODIFICAR LOS NÚMEROS.
  */
 typedef enum actuadores_control_luces{
-    LUCES = 2,
+    LUCES = 5,
 };
 
 

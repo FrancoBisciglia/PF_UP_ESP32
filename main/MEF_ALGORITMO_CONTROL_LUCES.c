@@ -187,6 +187,23 @@ static void vTaskLigthsControl(void *pvParameters)
      */
     static estado_MEF_principal_control_luces_t est_MEF_principal = ALGORITMO_CONTROL_LUCES;
 
+    /**
+     *  Se establece el estado inicial de las luces, que es apagadas.
+     */
+    set_relay_state(LUCES, OFF);
+    /**
+     *  Se publica el nuevo estado de las luces en el tópico MQTT correspondiente.
+     */
+    if(mqtt_check_connection())
+    {
+        char buffer[10];
+        snprintf(buffer, sizeof(buffer), "%s", "OFF");
+        esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+    }
+
+    ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
+
+
     while(1)
     {
         /**
@@ -235,6 +252,19 @@ static void vTaskLigthsControl(void *pvParameters)
                 est_MEF_principal = ALGORITMO_CONTROL_LUCES;
 
                 xTimerStart(aux_control_luces_get_timer_handle(), 0);
+
+                set_relay_state(LUCES, OFF);
+                /**
+                 *  Se publica el nuevo estado de las luces en el tópico MQTT correspondiente.
+                 */
+                if(mqtt_check_connection())
+                {
+                    char buffer[10];
+                    snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                    esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                }
+
+                ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
 
                 break;
             }
@@ -320,6 +350,15 @@ esp_err_t mef_luces_init(esp_mqtt_client_handle_t mqtt_client)
             return ESP_FAIL;
         }
     }
+
+
+    //=======================| INICIO DE TIMER |=======================//
+
+    /**
+     *  Se inicia el timer que controla el tiempo de encendido y apagado
+     *  de las luces.
+     */
+    xTimerStart(aux_control_luces_get_timer_handle(), 0);
     
     return ESP_OK;
 }
