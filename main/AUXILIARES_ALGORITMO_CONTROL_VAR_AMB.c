@@ -175,6 +175,22 @@ static void CallbackGetTempAmbData(void *pvParameters)
         }
     }
 
+
+    /**
+     *  En caso de que no haya habido ningun dato correcto, se setea la bandera de error de sensor
+     *  y se salta hasta el final de la rutina, en donde se libera el puntero creado.
+     */
+    if(cantidad_datos_correctos == 0)
+    {
+        mef_var_amb_set_temp_DHT11_sensor_error_flag_value(1);
+        goto ERROR_TEMP;
+    }
+
+    /**
+     *  En caso de que si haya algun dato correcto, se resetea la bandera de error de sensor.
+     */
+    mef_var_amb_set_temp_DHT11_sensor_error_flag_value(0);
+
     /**
      *  Se ordenan los datos obtenidos de menor a mayor.
      */
@@ -200,6 +216,7 @@ static void CallbackGetTempAmbData(void *pvParameters)
     /**
      *  Se libera el puntero creado.
      */
+    ERROR_TEMP: ;
     free(temperaturas_unidades_sec);
 }
 
@@ -256,6 +273,22 @@ static void CallbackGetHumAmbData(void *pvParameters)
         }
     }
 
+
+    /**
+     *  En caso de que no haya habido ningun dato correcto, se setea la bandera de error de sensor
+     *  y se salta hasta el final de la rutina, en donde se libera el puntero creado.
+     */
+    if(cantidad_datos_correctos == 0)
+    {
+        mef_var_amb_set_hum_DHT11_sensor_error_flag_value(1);
+        goto ERROR_HUM;
+    }
+
+    /**
+     *  En caso de que si haya algun dato correcto, se resetea la bandera de error de sensor.
+     */
+    mef_var_amb_set_hum_DHT11_sensor_error_flag_value(0);
+
     /**
      *  Se ordenan los datos obtenidos de menor a mayor.
      */
@@ -281,6 +314,7 @@ static void CallbackGetHumAmbData(void *pvParameters)
     /**
      *  Se libera el puntero creado.
      */
+    ERROR_HUM: ;
     free(humedades_unidades_sec);
 }
 
@@ -337,6 +371,22 @@ static void CallbackGetCO2AmbData(void *pvParameters)
         }
     }
 
+
+    /**
+     *  En caso de que no haya habido ningun dato correcto, se setea la bandera de error de sensor
+     *  y se salta hasta el final de la rutina, en donde se libera el puntero creado.
+     */
+    if(cantidad_datos_correctos == 0)
+    {
+        mef_var_amb_set_CO2_sensor_error_flag_value(1);
+        goto ERROR_CO2;
+    }
+
+    /**
+     *  En caso de que si haya algun dato correcto, se resetea la bandera de error de sensor.
+     */
+    mef_var_amb_set_CO2_sensor_error_flag_value(0);
+
     /**
      *  Se ordenan los datos obtenidos de menor a mayor.
      */
@@ -362,6 +412,7 @@ static void CallbackGetCO2AmbData(void *pvParameters)
     /**
      *  Se libera el puntero creado.
      */
+    ERROR_CO2: ;
     free(nivel_CO2_unidades_sec);
 }
 

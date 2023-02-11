@@ -131,6 +131,8 @@ void MEFControlVarAmb(void)
 
         est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         mef_var_amb_reset_transition_flag_control_var_amb = 0;
+
+        return;
     }
 
     switch (est_MEF_control_var_amb)
@@ -222,10 +224,6 @@ void MEFControlVarAmb(void)
         break;
     
     case CO2_BAJO_O_HUM_AMB_ALTA:
-
-        ESP_LOGW(mef_var_amb_tag, "TEMPERATURA: %.3f", mef_var_amb_temp);
-        ESP_LOGW(mef_var_amb_tag, "HUMEDAD: %.3f", mef_var_amb_hum);
-        ESP_LOGW(mef_var_amb_tag, "CO2: %.3f", mef_var_amb_CO2);
 
         /**
          *  En caso de que el nivel de CO2 suba por encima del límite inferior establecido, o que el nivel de humedad relativa baje
@@ -390,6 +388,9 @@ void vTaskVarAmbControl(void *pvParameters)
                     esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
                     esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
                 }
+
+                ESP_LOGW(mef_var_amb_tag, "VENTILADORES APAGADOS");
+                ESP_LOGW(mef_var_amb_tag, "CALEFACCIÓN APAGADA");
 
                 break;
             }
