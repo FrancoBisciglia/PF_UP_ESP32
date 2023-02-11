@@ -31,8 +31,8 @@ extern "C" {
  *  NOTA: CUANDO SE SEPA BIEN QUÉ RELÉ SE ASOCIA A QUÉ ACTUADOR, MODIFICAR LOS NÚMEROS.
  */
 typedef enum actuadores_control_var_amb{
-    VENTILADORES = 5,
-    CALEFACCION = 7,
+    VENTILADORES = 3,
+    CALEFACCION = 4,
 };
 
 
@@ -54,7 +54,7 @@ typedef enum {
  */
 typedef enum {
     ALGORITMO_CONTROL_VAR_AMB = 0,
-    MODO_MANUAL,
+    MODO_MANUAL_CONTROL_VAR_AMB,
 } estado_MEF_principal_control_var_amb_t;
 
 /*======================[EXTERNAL DATA DECLARATION]==============================*/

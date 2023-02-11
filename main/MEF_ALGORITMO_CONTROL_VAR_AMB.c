@@ -43,7 +43,7 @@ static TaskHandle_t xMefVarAmbAlgoritmoControlTaskHandle = NULL;
 static esp_mqtt_client_handle_t MefVarAmbClienteMQTT = NULL;
 
 /* Variable donde se guarda el valor de la temperatura ambiente sensada en °C. */
-static DHT11_sensor_temp_t mef_var_amb_temp = 0;
+static DHT11_sensor_temp_t mef_var_amb_temp = 25;
 /* Límite inferior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
 static DHT11_sensor_temp_t mef_var_amb_limite_inferior_temp = 18;
 /* Límite superior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
@@ -61,7 +61,7 @@ static DHT11_sensor_hum_t mef_var_amb_limite_superior_hum = 85;
 static DHT11_sensor_hum_t mef_var_amb_ancho_ventana_hist_hum = 5;
 
 /* Variable donde se guarda el valor del CO2 ambiente sensado en ppm. */
-static CO2_sensor_ppm_t mef_var_amb_CO2 = 0;
+static CO2_sensor_ppm_t mef_var_amb_CO2 = 600;
 /* Límite inferior de CO2 ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en ppm. */
 static CO2_sensor_ppm_t mef_var_amb_limite_inferior_CO2 = 400;
 /* Ancho de la ventana de histeresis de CO2 ambiente, posicionada alrededor de los límites del rango considerado como correcto, en ppm. */
@@ -126,6 +126,9 @@ void MEFControlVarAmb(void)
             esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
         }
 
+        ESP_LOGW(mef_var_amb_tag, "VENTILADORES APAGADOS");
+        ESP_LOGW(mef_var_amb_tag, "CALEFACCIÓN APAGADA");
+
         est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         mef_var_amb_reset_transition_flag_control_var_amb = 0;
     }
@@ -142,7 +145,8 @@ void MEFControlVarAmb(void)
          *  Además, no debe estar levantada ninguna bandera de error de sensor.
          */
         if ((mef_var_amb_CO2 < (mef_var_amb_limite_inferior_CO2 - (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
-            || mef_var_amb_CO2 > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
+            || mef_var_amb_hum > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
+            && (mef_var_amb_temp >= (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
             && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag)
         {
             set_relay_state(VENTILADORES, ON);
@@ -156,6 +160,8 @@ void MEFControlVarAmb(void)
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
+             ESP_LOGW(mef_var_amb_tag, "VENTILADORES ENCENDIDOS");
+
             est_MEF_control_var_amb = CO2_BAJO_O_HUM_AMB_ALTA;
         }
 
@@ -167,7 +173,7 @@ void MEFControlVarAmb(void)
          * 
          *  Además, no debe estar levantada la bandera de error de sensor.
          */
-        if (mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) 
+        else if (mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) 
             && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(CALEFACCION, ON);
@@ -180,6 +186,8 @@ void MEFControlVarAmb(void)
                 snprintf(buffer, sizeof(buffer), "%s", "ON");
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
+             
+            ESP_LOGW(mef_var_amb_tag, "CALEFACCIÓN ENCENDIDA");
 
             est_MEF_control_var_amb = TEMP_AMB_BAJA;
         }
@@ -192,7 +200,7 @@ void MEFControlVarAmb(void)
          * 
          *  Además, no debe estar levantada la bandera de error de sensor.
          */
-        if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) 
+        else if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) 
             && !mef_var_amb_temp_DHT11_sensor_error_flag)
         {
             set_relay_state(VENTILADORES, ON);
@@ -206,6 +214,8 @@ void MEFControlVarAmb(void)
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
+            ESP_LOGW(mef_var_amb_tag, "VENTILADORES ENCENDIDOS");
+
             est_MEF_control_var_amb = TEMP_AMB_ELEVADA;
         }
 
@@ -213,16 +223,20 @@ void MEFControlVarAmb(void)
     
     case CO2_BAJO_O_HUM_AMB_ALTA:
 
+        ESP_LOGW(mef_var_amb_tag, "TEMPERATURA: %.3f", mef_var_amb_temp);
+        ESP_LOGW(mef_var_amb_tag, "HUMEDAD: %.3f", mef_var_amb_hum);
+        ESP_LOGW(mef_var_amb_tag, "CO2: %.3f", mef_var_amb_CO2);
+
         /**
          *  En caso de que el nivel de CO2 suba por encima del límite inferior establecido, o que el nivel de humedad relativa baje
          *  por debajo del límite superior establecido, o que la temperatura ambiente baje por debajo del límite inferior establecido,
          *  ya que se le da prioridad a dicha variable, o que se levante alguna de las banderas de error de sensado, se cambia al 
          *  estado en donde se apagan los actuadores.
          */
-        if ((mef_var_amb_CO2 > (mef_var_amb_limite_inferior_CO2 + (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
-            || mef_var_amb_CO2 < (mef_var_amb_limite_superior_hum - (mef_var_amb_ancho_ventana_hist_hum / 2))
+        if (((mef_var_amb_CO2 > (mef_var_amb_limite_inferior_CO2 + (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
+            && mef_var_amb_hum < (mef_var_amb_limite_superior_hum - (mef_var_amb_ancho_ventana_hist_hum / 2)))
             || mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
-            && (mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
+            || (mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
         {
             set_relay_state(VENTILADORES, OFF);
             /**
@@ -234,6 +248,8 @@ void MEFControlVarAmb(void)
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
+
+            ESP_LOGW(mef_var_amb_tag, "VENTILADORES APAGADOS");
 
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
@@ -262,6 +278,8 @@ void MEFControlVarAmb(void)
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
 
+            ESP_LOGW(mef_var_amb_tag, "CALEFACCIÓN APAGADA");
+
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
 
@@ -288,6 +306,8 @@ void MEFControlVarAmb(void)
                 snprintf(buffer, sizeof(buffer), "%s", "OFF");
                 esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
             }
+
+            ESP_LOGW(mef_var_amb_tag, "VENTILADORES APAGADOS");
 
             est_MEF_control_var_amb = VAR_AMB_CORRECTAS;
         }
@@ -337,7 +357,7 @@ void vTaskVarAmbControl(void *pvParameters)
              */
             if (mef_var_amb_manual_mode_flag)
             {
-                est_MEF_principal = MODO_MANUAL;
+                est_MEF_principal = MODO_MANUAL_CONTROL_VAR_AMB;
                 mef_var_amb_reset_transition_flag_control_var_amb = 1;
             }
 
@@ -345,7 +365,7 @@ void vTaskVarAmbControl(void *pvParameters)
 
             break;
 
-        case MODO_MANUAL:
+        case MODO_MANUAL_CONTROL_VAR_AMB:
 
             /**
              *  En caso de que se baje la bandera de modo MANUAL, se debe transicionar nuevamente al estado
@@ -356,6 +376,21 @@ void vTaskVarAmbControl(void *pvParameters)
             if (!mef_var_amb_manual_mode_flag)
             {
                 est_MEF_principal = ALGORITMO_CONTROL_VAR_AMB;
+
+                set_relay_state(VENTILADORES, OFF);
+                set_relay_state(CALEFACCION, OFF);
+
+                /**
+                 *  Se publica el nuevo estado de la calefacción y ventiladores en los tópicos MQTT correspondientes.
+                 */
+                if(mqtt_check_connection())
+                {
+                    char buffer[10];
+                    snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
+                }
+
                 break;
             }
 

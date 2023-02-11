@@ -24,16 +24,16 @@ extern "C" {
 /**
  *  Definición de los tópicos MQTT a publicar o suscribirse.
  */
-#define NEW_TEMP_SP_MQTT_TOPIC   "/SP/TempAmb"
+#define NEW_TEMP_SP_MQTT_TOPIC   "NodeRed/Sensores ambientales/Temperatura/SP"
 #define MANUAL_MODE_MQTT_TOPIC  "/VarAmb/Modo"
 #define MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC    "/VarAmb/Modo_Manual/Ventiladores"
 #define MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC   "/VarAmb/Modo_Manual/Calefaccion"
 #define VENTILADORES_STATE_MQTT_TOPIC   "Actuadores/Ventiladores"
 #define CALEFACCION_STATE_MQTT_TOPIC   "Actuadores/Calefaccion"
 
-#define CO2_AMB_MQTT_TOPIC "Sensores ambientales/CO2"
+#define CO2_AMB_MQTT_TOPIC  "Sensores ambientales/CO2"
 #define TEMP_AMB_MQTT_TOPIC "Sensores ambientales/Temperatura"
-#define HUM_AMB_MQTT_TOPIC "Sensores ambientales/Humedad"
+#define HUM_AMB_MQTT_TOPIC  "Sensores ambientales/Humedad"
 
 /* Código de error que se carga en el valor de temperatura al detectar un error de sensado. */
 #define CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB -300
@@ -49,7 +49,7 @@ extern "C" {
 
 /*=====================[EXTERNAL FUNCTIONS DECLARATION]=========================*/
 
-esp_err_t aux_control_var_amb_init(esp_mqtt_client_handle_t mqtt_client, unsigned int cantidad_unidades_sec);
+esp_err_t aux_control_var_amb_init(esp_mqtt_client_handle_t mqtt_client);
 
 /*==================[END OF FILE]============================================*/
 #ifdef __cplusplus

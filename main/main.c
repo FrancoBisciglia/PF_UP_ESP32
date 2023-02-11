@@ -8,6 +8,9 @@
 #include "MEF_ALGORITMO_CONTROL_LUCES.h"
 #include "AUXILIARES_ALGORITMO_CONTROL_LUCES.h"
 
+#include "MEF_ALGORITMO_CONTROL_VAR_AMB.h"
+#include "AUXILIARES_ALGORITMO_CONTROL_VAR_AMB.h"
+
 #include "MQTT_PUBL_SUSCR.h"
 #include "WiFi_STA.h"
 #include "MCP23008.h"
@@ -39,6 +42,12 @@ void app_main(void)
 
     //=======================| INIT ALGORITMO CONTROL LUCES |=======================//
 
-    aux_control_luces_init(Cliente_MQTT);
-    mef_luces_init(Cliente_MQTT);
+    // aux_control_luces_init(Cliente_MQTT);
+    // mef_luces_init(Cliente_MQTT);
+
+    //=======================| INIT ALGORITMO CONTROL VAR AMB |=======================//
+
+    aux_control_var_amb_init(Cliente_MQTT);
+    mef_var_amb_init(Cliente_MQTT);
+
 }

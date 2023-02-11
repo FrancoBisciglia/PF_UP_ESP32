@@ -186,16 +186,21 @@ static void CallbackGetTempAmbData(void *pvParameters)
     DHT11_sensor_temp_t mediana_temperaturas_unidades_sec;
 
     if ( (cantidad_datos_correctos % 2) == 0 )  
-        mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[cantidad_datos_correctos / 2] + temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+        mediana_temperaturas_unidades_sec = (temperaturas_unidades_sec[(cantidad_datos_correctos-1) / 2] + temperaturas_unidades_sec[((cantidad_datos_correctos-1) / 2) + 1]) / 2.0;  
     
     else  
-        mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+        mediana_temperaturas_unidades_sec = temperaturas_unidades_sec[(cantidad_datos_correctos-1) / 2];
 
 
     /**
      *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
      */
     mef_var_amb_set_temp_amb_value(mediana_temperaturas_unidades_sec);
+
+    /**
+     *  Se libera el puntero creado.
+     */
+    free(temperaturas_unidades_sec);
 }
 
 
@@ -262,16 +267,21 @@ static void CallbackGetHumAmbData(void *pvParameters)
     DHT11_sensor_hum_t mediana_humedades_unidades_sec;
 
     if ( (cantidad_datos_correctos % 2) == 0 )  
-        mediana_humedades_unidades_sec = (humedades_unidades_sec[cantidad_datos_correctos / 2] + humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+        mediana_humedades_unidades_sec = (humedades_unidades_sec[(cantidad_datos_correctos-1) / 2] + humedades_unidades_sec[((cantidad_datos_correctos-1) / 2) + 1]) / 2.0;  
     
     else  
-        mediana_humedades_unidades_sec = humedades_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+        mediana_humedades_unidades_sec = humedades_unidades_sec[(cantidad_datos_correctos-1) / 2];
 
 
     /**
      *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
      */
     mef_var_amb_set_hum_amb_value(mediana_humedades_unidades_sec);
+
+    /**
+     *  Se libera el puntero creado.
+     */
+    free(humedades_unidades_sec);
 }
 
 
@@ -338,16 +348,21 @@ static void CallbackGetCO2AmbData(void *pvParameters)
     CO2_sensor_ppm_t mediana_nivel_CO2_unidades_sec;
 
     if ( (cantidad_datos_correctos % 2) == 0 )  
-        mediana_nivel_CO2_unidades_sec = (nivel_CO2_unidades_sec[cantidad_datos_correctos / 2] + nivel_CO2_unidades_sec[(cantidad_datos_correctos / 2) + 1]) / 2.0;  
+        mediana_nivel_CO2_unidades_sec = (nivel_CO2_unidades_sec[(cantidad_datos_correctos-1) / 2] + nivel_CO2_unidades_sec[((cantidad_datos_correctos-1) / 2) + 1]) / 2.0;  
     
     else  
-        mediana_nivel_CO2_unidades_sec = nivel_CO2_unidades_sec[(cantidad_datos_correctos / 2) + 1];
+        mediana_nivel_CO2_unidades_sec = nivel_CO2_unidades_sec[(cantidad_datos_correctos-1) / 2];
 
 
     /**
      *  Se le pasa la mediana del array de datos obtenido a la MEF de control de variables ambientales.
      */
     mef_var_amb_set_CO2_amb_value(mediana_nivel_CO2_unidades_sec);
+
+    /**
+     *  Se libera el puntero creado.
+     */
+    free(nivel_CO2_unidades_sec);
 }
 
 
@@ -435,7 +450,7 @@ static void CallbackNewTempAmbSP(void *pvParameters)
  * @param mqtt_client   Handle del cliente MQTT.
  * @return esp_err_t 
  */
-esp_err_t mef_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
+esp_err_t aux_control_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
 {
     /**
      *  Copiamos el handle del cliente MQTT en la variable interna.
