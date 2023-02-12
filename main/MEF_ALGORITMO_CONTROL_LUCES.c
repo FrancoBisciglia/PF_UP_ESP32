@@ -389,8 +389,11 @@ void mef_luces_set_lights_on_time_hours(light_time_t tiempo_luces_on)
     /**
      *  El tiempo de apagado de las luces se calcula teniendo en cuenta un ciclo completo
      *  de 24 hs.
+     * 
+     *  NOTA: CAMBIAR ESTO DESPUES, ES SOLO PARA PRUEBA
      */
-    mef_luces_tiempo_luces_off = 24 - mef_luces_tiempo_luces_on;
+    //mef_luces_tiempo_luces_off = 24 - mef_luces_tiempo_luces_on;
+    mef_luces_tiempo_luces_off = 5 - mef_luces_tiempo_luces_on;
 }
 
 

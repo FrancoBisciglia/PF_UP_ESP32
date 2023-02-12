@@ -42,8 +42,8 @@ void app_main(void)
 
     //=======================| INIT ALGORITMO CONTROL LUCES |=======================//
 
-    // aux_control_luces_init(Cliente_MQTT);
-    // mef_luces_init(Cliente_MQTT);
+    aux_control_luces_init(Cliente_MQTT);
+    mef_luces_init(Cliente_MQTT);
 
     //=======================| INIT ALGORITMO CONTROL VAR AMB |=======================//
 

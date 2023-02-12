@@ -21,6 +21,7 @@ extern "C" {
 
 #include "DHT11_SENSOR.h"
 #include "CO2_SENSOR.h"
+#include "MCP23008.h"
 
 /*============================[DEFINES AND MACROS]=====================================*/
 
@@ -31,8 +32,8 @@ extern "C" {
  *  NOTA: CUANDO SE SEPA BIEN QUÉ RELÉ SE ASOCIA A QUÉ ACTUADOR, MODIFICAR LOS NÚMEROS.
  */
 typedef enum actuadores_control_var_amb{
-    VENTILADORES = 3,
-    CALEFACCION = 4,
+    VENTILADORES = RELE_3,
+    CALEFACCION = RELE_5,
 };
 
 
