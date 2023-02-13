@@ -132,8 +132,6 @@ static void MEFControlLuces(void)
             
             esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
         }
-
-        
     }
 
 
