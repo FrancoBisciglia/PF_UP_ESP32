@@ -44,10 +44,23 @@ static light_time_t mef_luces_tiempo_luces_off = MEF_LUCES_TIEMPO_LUCES_OFF;
 /* Tiempo de encendido de la bomba, en minutos. */
 static light_time_t mef_luces_tiempo_luces_on = MEF_LUCES_TIEMPO_LUCES_ON;
 
+/**
+ *  Tiempo de encendido o apagado que le quedaba por cumplir al timer de control de luces
+ *  justo antes de hacer una transición con historia a otro estado de la MEF de mayor
+ *  jerarquia.
+ * 
+ *  Por ejemplo, si se tiene un tiempo de encendido de 12 hs, transcurrieron 8 horas, y se 
+ *  pasa a modo MANUAL (transición con historia), se guarda el tiempo de 4 horas restantes,
+ *  que luego se cargara al timer al volver al modo AUTO.
+ */
+static TickType_t timeLeft;
+/* Estado en el que estaban las luces antes de realizarse una transición con historia. */
+static bool mef_luces_lights_state_history_transition = 0;
+
 /* Bandera utilizada para controlar si se está o no en modo manual en el algoritmo de control de las luces. */
 static bool mef_luces_manual_mode_flag = 0;
-/* Banderas utilizadas para controlar las transiciones con reset de la MEF de control de las luces. */
-static bool mef_luces_reset_transition_flag_control_luces = 0;
+/* Bandera utilizada para controlar las transiciones con historia de la MEF de control de luces. */
+static bool mef_luces_history_transition_flag = 0;
 /**
  *  Bandera utilizada para verificar si se cumplió el timeout del timer utilizado para controlar el encendido
  *  y apagado de las.
@@ -78,30 +91,49 @@ static void MEFControlLuces(void)
     static estado_MEF_control_luces_t est_MEF_control_luces = ESPERA_ILUMINACION_CULTIVOS;
 
     /**
-     *  Se controla si se debe hacer una transición con reset, caso en el cual se vuelve al estado
-     *  de luces apagadas y se paran los timers correspondientes.
+     *  Se controla la transición con historia de la MEF de control de las luces, donde en
+     *  tal caso, se restaura el tiempo de encendido o apagado de las luces que quedó pendiente
+     *  y el estado en el que estaban las luces antes de la transición.
      */
-    if(mef_luces_reset_transition_flag_control_luces)
+    if(mef_luces_history_transition_flag)
     {
-        est_MEF_control_luces = ESPERA_ILUMINACION_CULTIVOS;
+        mef_luces_history_transition_flag = 0;
 
-        mef_luces_reset_transition_flag_control_luces = 0;
+        /**
+         *  Se restaura el tiempo que quedó pendiente de encendido o apagado de las luces.
+         */
+        xTimerChangePeriod(aux_control_luces_get_timer_handle(), timeLeft, 0);
 
-        xTimerStop(aux_control_luces_get_timer_handle(), 0);
-        mef_luces_timer_finished_flag = 0;
 
-        set_relay_state(LUCES, OFF);
+        /**
+         *  Se reestablece el estado en el que estaban las luces antes de la transición
+         *  con historia.
+         */
+        set_relay_state(LUCES, mef_luces_lights_state_history_transition);
+
         /**
          *  Se publica el nuevo estado de las luces en el tópico MQTT correspondiente.
          */
         if(mqtt_check_connection())
         {
             char buffer[10];
-            snprintf(buffer, sizeof(buffer), "%s", "OFF");
+
+            if(mef_luces_lights_state_history_transition == ON)
+            {
+                snprintf(buffer, sizeof(buffer), "%s", "ON");
+                ESP_LOGW(mef_luces_tag, "LUCES ENCENDIDAS");
+            }
+            
+            else if(mef_luces_lights_state_history_transition == OFF)
+            {
+                snprintf(buffer, sizeof(buffer), "%s", "OFF");
+                ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
+            }
+            
             esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
         }
 
-        ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
+        
     }
 
 
@@ -119,6 +151,11 @@ static void MEFControlLuces(void)
             mef_luces_timer_finished_flag = 0;
             xTimerChangePeriod(aux_control_luces_get_timer_handle(), pdMS_TO_TICKS(HOURS_TO_MS * mef_luces_tiempo_luces_on), 0);
             xTimerReset(aux_control_luces_get_timer_handle(), 0);
+
+            /**
+             *  Se actualiza el nuevo estado de las luces para las transiciones con historia.
+             */
+            mef_luces_lights_state_history_transition = ON;
 
             set_relay_state(LUCES, ON);
             /**
@@ -150,6 +187,11 @@ static void MEFControlLuces(void)
             mef_luces_timer_finished_flag = 0;
             xTimerChangePeriod(aux_control_luces_get_timer_handle(), pdMS_TO_TICKS(HOURS_TO_MS * mef_luces_tiempo_luces_off), 0);
             xTimerReset(aux_control_luces_get_timer_handle(), 0);
+
+            /**
+             *  Se actualiza el nuevo estado de las luces para las transiciones con historia.
+             */
+            mef_luces_lights_state_history_transition = OFF;
 
             set_relay_state(LUCES, OFF);
             /**
@@ -231,7 +273,11 @@ static void vTaskLigthsControl(void *pvParameters)
             if(mef_luces_manual_mode_flag)
             {
                 est_MEF_principal = MODO_MANUAL;
-                mef_luces_reset_transition_flag_control_luces = 1;
+
+                timeLeft = xTimerGetExpiryTime(aux_control_luces_get_timer_handle()) - xTaskGetTickCount();
+                xTimerStop(aux_control_luces_get_timer_handle(), 0);
+
+                break;
             }
 
             MEFControlLuces();
@@ -243,28 +289,14 @@ static void vTaskLigthsControl(void *pvParameters)
 
             /**
              *  En caso de que se baje la bandera de modo MANUAL, se debe transicionar nuevamente al estado
-             *  de modo AUTOMATICO, en donde se controla el encendido y apagado de las luces por tiempos, y
-             *  se inicia el timer de control de tiempo de encendido y apagado de las luces, para que continue
-             *  en el tiempo que se quedó.
+             *  de modo AUTOMATICO, en donde se controla el encendido y apagado de las luces por tiempos,
+             *  mediante una transición con historia, por lo que se setea la bandera correspondiente.
              */
             if(!mef_luces_manual_mode_flag)
             {
                 est_MEF_principal = ALGORITMO_CONTROL_LUCES;
 
-                xTimerStart(aux_control_luces_get_timer_handle(), 0);
-
-                set_relay_state(LUCES, OFF);
-                /**
-                 *  Se publica el nuevo estado de las luces en el tópico MQTT correspondiente.
-                 */
-                if(mqtt_check_connection())
-                {
-                    char buffer[10];
-                    snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                    esp_mqtt_client_publish(MefLucesClienteMQTT, LIGHTS_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
-                }
-
-                ESP_LOGW(mef_luces_tag, "LUCES APAGADAS");
+                mef_luces_history_transition_flag = 1;
 
                 break;
             }
