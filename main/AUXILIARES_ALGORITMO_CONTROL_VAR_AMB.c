@@ -153,6 +153,7 @@ static void CallbackGetTempAmbData(void *pvParameters)
     {
         DHT11_sensor_temp_t buffer = CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB;
         mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_temp[i-1], &buffer);
+        ESP_LOGW(aux_control_var_amb_tag, "NEW TEMP VALUE: %.3f", buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
@@ -251,6 +252,7 @@ static void CallbackGetHumAmbData(void *pvParameters)
     {
         DHT11_sensor_hum_t buffer = CODIGO_ERROR_SENSOR_DHT11_HUM_AMB;
         mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_hum[i-1], &buffer);
+        ESP_LOGW(aux_control_var_amb_tag, "NEW HUM VALUE: %.3f", buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
@@ -349,6 +351,7 @@ static void CallbackGetCO2AmbData(void *pvParameters)
     {
         CO2_sensor_ppm_t buffer = CODIGO_ERROR_SENSOR_CO2;
         mqtt_get_float_data_from_topic(aux_control_var_amb_topicos_datos_co2[i-1], &buffer);
+        ESP_LOGW(aux_control_var_amb_tag, "NEW CO2 VALUE: %.3f", buffer);
 
         /**
          *  Se controla que el dato obtenido no tenga el código de error, en caso de que sí, 
