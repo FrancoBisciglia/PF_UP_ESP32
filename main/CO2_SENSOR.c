@@ -256,10 +256,6 @@ static void vTaskGetCO2ByPWM(void *pvParameters)
         /**
          *  Se ejecuta la función callback configurada, verificando anteriormente que ya
          *  haya pasado el tiempo de calentamiento del sensor.
-         * 
-         *  NOTA: VER SI SE PUEDE MEJORAR PARA QUE SOLO VUELVA A MANDAR EL NOTIFY
-         *  SI LA TAREA A LA QUE HAY QUE NOTIFICAR LEYÓ EL ÚLTIMO DATO. ESTO PODRIA
-         *  HACERSE CON UNA SIMPLE BANDERA QUE SE ACTIVA AL LLAMAR A LA FUNCIÓN DE LEER EL DATO.
          */
         if(CO2SensorCallback != NULL && !CO2_sensor_is_warming_up())
         {

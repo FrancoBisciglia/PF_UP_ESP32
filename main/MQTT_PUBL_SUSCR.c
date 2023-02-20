@@ -31,13 +31,6 @@
  * 
  *      Si se desea publicar un dato en un tópico, se debe utilizar la función estándar "esp_mqtt_client_publish()" 
  *  de la librería de ESP-IDF.
- * 
- * 
- * 
- * 
- * 
- * 
- *  NOTA: FALTA LA FUNCIONALIDAD DE RECONEXION AL BROKER EN CASO DE DESCONEXION POR ERROR.
  */
 
 
