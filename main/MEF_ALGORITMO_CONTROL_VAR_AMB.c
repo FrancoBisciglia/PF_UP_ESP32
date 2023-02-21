@@ -145,11 +145,14 @@ void MEFControlVarAmb(void)
          *  por encima del límite superior establecido, se cambia al estado en donde se encienden los ventiladores. 
          * 
          *  Además, no debe estar levantada ninguna bandera de error de sensor.
+         * 
+         *  También, debe haber conexión con el broker MQTT.
          */
         if ((mef_var_amb_CO2 < (mef_var_amb_limite_inferior_CO2 - (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
             || mef_var_amb_hum > (mef_var_amb_limite_superior_hum + (mef_var_amb_ancho_ventana_hist_hum / 2)))
             && (mef_var_amb_temp >= (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
-            && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag)
+            && !mef_var_amb_temp_DHT11_sensor_error_flag && !mef_var_amb_hum_DHT11_sensor_error_flag && !mef_var_amb_CO2_sensor_error_flag
+            && mqtt_check_connection())
         {
             set_relay_state(VENTILADORES, ON);
             /**
@@ -174,9 +177,12 @@ void MEFControlVarAmb(void)
          *  la calefacción.
          * 
          *  Además, no debe estar levantada la bandera de error de sensor.
+         * 
+         *  También, debe haber conexión con el broker MQTT.
          */
         else if (mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)) 
-            && !mef_var_amb_temp_DHT11_sensor_error_flag)
+            && !mef_var_amb_temp_DHT11_sensor_error_flag
+            && mqtt_check_connection())
         {
             set_relay_state(CALEFACCION, ON);
             /**
@@ -201,9 +207,12 @@ void MEFControlVarAmb(void)
          *  los ventiladores.
          * 
          *  Además, no debe estar levantada la bandera de error de sensor.
+         * 
+         *  También, debe haber conexión con el broker MQTT.
          */
         else if (mef_var_amb_temp > (mef_var_amb_limite_superior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2)) 
-            && !mef_var_amb_temp_DHT11_sensor_error_flag)
+            && !mef_var_amb_temp_DHT11_sensor_error_flag
+            && mqtt_check_connection())
         {
             set_relay_state(VENTILADORES, ON);
             /**
@@ -230,11 +239,15 @@ void MEFControlVarAmb(void)
          *  por debajo del límite superior establecido, o que la temperatura ambiente baje por debajo del límite inferior establecido,
          *  ya que se le da prioridad a dicha variable, o que se levante alguna de las banderas de error de sensado, se cambia al 
          *  estado en donde se apagan los actuadores.
+         * 
+         *  También, si se produce una deconexión del broker MQTT, al no poder recibir nuevos datos, se vuelve al estado
+         *  con los actuadores apagados.
          */
         if (((mef_var_amb_CO2 > (mef_var_amb_limite_inferior_CO2 + (mef_var_amb_ancho_ventana_hist_CO2 / 2)) 
             && mef_var_amb_hum < (mef_var_amb_limite_superior_hum - (mef_var_amb_ancho_ventana_hist_hum / 2)))
             || mef_var_amb_temp < (mef_var_amb_limite_inferior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2)))
-            || (mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag))
+            || (mef_var_amb_temp_DHT11_sensor_error_flag || mef_var_amb_hum_DHT11_sensor_error_flag || mef_var_amb_CO2_sensor_error_flag)
+            || !mqtt_check_connection())
         {
             set_relay_state(VENTILADORES, OFF);
             /**
@@ -261,9 +274,13 @@ void MEFControlVarAmb(void)
          *  del rango de temperatura correcto, se transiciona al estado con los actuadores apagados. 
          * 
          *  Además, si se levanta la bandera de error de sensor, se transiciona a dicho estado.
+         * 
+         *  También, si se produce una deconexión del broker MQTT, al no poder recibir nuevos datos, se vuelve al estado
+         *  con los actuadores apagados.
          */
         if (mef_var_amb_temp > (mef_var_amb_limite_inferior_temp + (mef_var_amb_ancho_ventana_hist_temp / 2))
-            || mef_var_amb_temp_DHT11_sensor_error_flag)
+            || mef_var_amb_temp_DHT11_sensor_error_flag
+            || !mqtt_check_connection())
         {
             set_relay_state(CALEFACCION, OFF);
             /**
@@ -290,9 +307,13 @@ void MEFControlVarAmb(void)
          *  superior del rango de temperatura correcto, se transiciona al estado con los actuadores apagados.
          * 
          *  Además, si se levanta la bandera de error de sensor, se transiciona a dicho estado.
+         * 
+         *  También, si se produce una deconexión del broker MQTT, al no poder recibir nuevos datos, se vuelve al estado
+         *  con los actuadores apagados.
          */
         if (mef_var_amb_temp < (mef_var_amb_limite_superior_temp - (mef_var_amb_ancho_ventana_hist_temp / 2))
-            || mef_var_amb_temp_DHT11_sensor_error_flag)
+            || mef_var_amb_temp_DHT11_sensor_error_flag
+            || !mqtt_check_connection())
         {
             set_relay_state(VENTILADORES, OFF);
             /**
@@ -370,27 +391,21 @@ void vTaskVarAmbControl(void *pvParameters)
              *  de modo AUTOMATICO, en donde se controlan las variables ambientales a partir de los
              *  valores de los sensores DHT11 y de CO2 de las unidades secundarias y los ventiladores y
              *  calefacción.
+             * 
+             *  Además, en caso de que se produzca una desconexión del broker MQTT, se vuelve también
+             *  al modo AUTOMATICO, y se limpia la bandera de modo MANUAL.
              */
-            if (!mef_var_amb_manual_mode_flag)
+            if (!mef_var_amb_manual_mode_flag || !mqtt_check_connection())
             {
                 est_MEF_principal = ALGORITMO_CONTROL_VAR_AMB;
 
-                set_relay_state(VENTILADORES, OFF);
-                set_relay_state(CALEFACCION, OFF);
+                mef_var_amb_manual_mode_flag = 0;
 
                 /**
-                 *  Se publica el nuevo estado de la calefacción y ventiladores en los tópicos MQTT correspondientes.
+                 *  Se setea la bandera de reset de la MEF de control de variables ambientales de modo
+                 *  que se resetee el estado de los actuadores correspondientes.
                  */
-                if(mqtt_check_connection())
-                {
-                    char buffer[10];
-                    snprintf(buffer, sizeof(buffer), "%s", "OFF");
-                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, VENTILADORES_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
-                    esp_mqtt_client_publish(MefVarAmbClienteMQTT, CALEFACCION_STATE_MQTT_TOPIC, buffer, 0, 0, 0);
-                }
-
-                ESP_LOGW(mef_var_amb_tag, "VENTILADORES APAGADOS");
-                ESP_LOGW(mef_var_amb_tag, "CALEFACCIÓN APAGADA");
+                mef_var_amb_reset_transition_flag_control_var_amb = 1;
 
                 break;
             }

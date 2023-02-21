@@ -289,11 +289,15 @@ static void vTaskLigthsControl(void *pvParameters)
              *  En caso de que se baje la bandera de modo MANUAL, se debe transicionar nuevamente al estado
              *  de modo AUTOMATICO, en donde se controla el encendido y apagado de las luces por tiempos,
              *  mediante una transición con historia, por lo que se setea la bandera correspondiente.
+             * 
+             *  Además, en caso de que se produzca una desconexión del broker MQTT, se vuelve también
+             *  al modo AUTOMATICO, y se limpia la bandera de modo MANUAL.
              */
-            if(!mef_luces_manual_mode_flag)
+            if(!mef_luces_manual_mode_flag || !mqtt_check_connection())
             {
                 est_MEF_principal = ALGORITMO_CONTROL_LUCES;
 
+                mef_luces_manual_mode_flag = 0;
                 mef_luces_history_transition_flag = 1;
 
                 break;
