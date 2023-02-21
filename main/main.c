@@ -5,6 +5,8 @@
 
 #include "mqtt_client.h"
 
+#include "esp_check.h"
+
 #include "MEF_ALGORITMO_CONTROL_LUCES.h"
 #include "AUXILIARES_ALGORITMO_CONTROL_LUCES.h"
 
@@ -14,6 +16,13 @@
 #include "MQTT_PUBL_SUSCR.h"
 #include "WiFi_STA.h"
 #include "MCP23008.h"
+
+#include "DEBUG_DEFINITIONS.h"
+
+
+/* Tag para imprimir información en el LOG. */
+static const char *TAG = "MAIN";
+
 
 void app_main(void)
 {
@@ -38,16 +47,21 @@ void app_main(void)
 
     //=======================| INIT MCP23008 |=======================//
 
-    MCP23008_init();
+    ESP_ERROR_CHECK_WITHOUT_ABORT(MCP23008_init());
 
     //=======================| INIT ALGORITMO CONTROL LUCES |=======================//
 
+    #ifdef DEBUG_ALGORITMO_CONTROL_LUCES
     aux_control_luces_init(Cliente_MQTT);
     mef_luces_init(Cliente_MQTT);
+    #endif
 
     //=======================| INIT ALGORITMO CONTROL VAR AMB |=======================//
 
+    #ifdef DEBUG_ALGORITMO_CONTROL_VARIABLES_AMBIENTALES
     aux_control_var_amb_init(Cliente_MQTT);
     mef_var_amb_init(Cliente_MQTT);
+    #endif
 
 }
+
