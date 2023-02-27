@@ -25,7 +25,7 @@ extern "C" {
  *  Definición de los tópicos MQTT a suscribirse.
  */
 #define NEW_LIGHTS_ON_TIME_MQTT_TOPIC   "/Tiempos/Luces/Tiempo_encendido"
-#define MANUAL_MODE_MQTT_TOPIC  "/Luces/Modo"
+#define LIGHTS_MANUAL_MODE_MQTT_TOPIC  "/Luces/Modo"
 #define MANUAL_MODE_LIGHTS_STATE_MQTT_TOPIC    "/Luces/Modo_Manual/Luces"
 #define LIGHTS_STATE_MQTT_TOPIC   "Actuadores/Luces"
 

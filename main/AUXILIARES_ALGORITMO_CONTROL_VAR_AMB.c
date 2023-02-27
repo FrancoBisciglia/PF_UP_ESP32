@@ -79,7 +79,7 @@ static void CallbackManualMode(void *pvParameters)
      *  Se obtiene el mensaje del tópico de modo MANUAL o AUTO.
      */
     char buffer[10];
-    mqtt_get_char_data_from_topic(MANUAL_MODE_MQTT_TOPIC, buffer);
+    mqtt_get_char_data_from_topic(VAR_AMB_MANUAL_MODE_MQTT_TOPIC, buffer);
 
     /**
      *  Dependiendo si el mensaje fue "MANUAL" o "AUTO", se setea o resetea
@@ -521,7 +521,7 @@ esp_err_t aux_control_var_amb_init(esp_mqtt_client_handle_t mqtt_client)
     mqtt_topic_t list_of_topics[] = {
         [0].topic_name = NEW_TEMP_SP_MQTT_TOPIC,
         [0].topic_function_cb = CallbackNewTempAmbSP,
-        [1].topic_name = MANUAL_MODE_MQTT_TOPIC,
+        [1].topic_name = VAR_AMB_MANUAL_MODE_MQTT_TOPIC,
         [1].topic_function_cb = CallbackManualMode,
         [2].topic_name = MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC,
         [2].topic_function_cb = CallbackManualModeNewActuatorState,

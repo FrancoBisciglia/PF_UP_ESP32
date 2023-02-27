@@ -25,7 +25,7 @@ extern "C" {
  *  Definición de los tópicos MQTT a publicar o suscribirse.
  */
 #define NEW_TEMP_SP_MQTT_TOPIC   "NodeRed/Sensores ambientales/Temperatura/SP"
-#define MANUAL_MODE_MQTT_TOPIC  "/VarAmb/Modo"
+#define VAR_AMB_MANUAL_MODE_MQTT_TOPIC  "/VarAmb/Modo"
 #define MANUAL_MODE_VENTILADORES_STATE_MQTT_TOPIC    "/VarAmb/Modo_Manual/Ventiladores"
 #define MANUAL_MODE_CALEFACCION_STATE_MQTT_TOPIC   "/VarAmb/Modo_Manual/Calefaccion"
 #define VENTILADORES_STATE_MQTT_TOPIC   "Actuadores/Ventiladores"
