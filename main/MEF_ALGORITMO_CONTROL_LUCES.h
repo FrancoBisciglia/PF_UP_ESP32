@@ -23,7 +23,7 @@ extern "C" {
 /*============================[DEFINES AND MACROS]=====================================*/
 
 /* Tiempos estándar de encendido y apagado de las luces de las unidades secundarias, en horas y en ciclos de 24 horas. */
-#define MEF_LUCES_TIEMPO_LUCES_ON  2
+#define MEF_LUCES_TIEMPO_LUCES_ON  3
 #define MEF_LUCES_TIEMPO_LUCES_OFF  3
 
 /**

@@ -45,27 +45,27 @@ static esp_mqtt_client_handle_t MefVarAmbClienteMQTT = NULL;
 /* Variable donde se guarda el valor de la temperatura ambiente sensada en °C. */
 static DHT11_sensor_temp_t mef_var_amb_temp = 25;
 /* Límite inferior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
-static DHT11_sensor_temp_t mef_var_amb_limite_inferior_temp = 18;
+static DHT11_sensor_temp_t mef_var_amb_limite_inferior_temp = 22;
 /* Límite superior de temperatura ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en °C. */
 static DHT11_sensor_temp_t mef_var_amb_limite_superior_temp = 28;
 /* Ancho de la ventana de histeresis de temperatura ambiente, posicionada alrededor de los límites del rango considerado como correcto, en °C. */
 static DHT11_sensor_temp_t mef_var_amb_ancho_ventana_hist_temp = 1;
 /* Delta de temperatura considerado, en °C. */
-static DHT11_sensor_temp_t mef_var_amb_delta_temp = 5;
+static DHT11_sensor_temp_t mef_var_amb_delta_temp = 3;
 
 /* Variable donde se guarda el valor de la humedad relativa ambiente sensada en %. */
 static DHT11_sensor_hum_t mef_var_amb_hum = 0;
 /* Límite superior de humedad ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en %. */
-static DHT11_sensor_hum_t mef_var_amb_limite_superior_hum = 85;
+static DHT11_sensor_hum_t mef_var_amb_limite_superior_hum =20;
 /* Ancho de la ventana de histeresis de humedad ambiente, posicionada alrededor de los límites del rango considerado como correcto, en %. */
 static DHT11_sensor_hum_t mef_var_amb_ancho_ventana_hist_hum = 5;
 
 /* Variable donde se guarda el valor del CO2 ambiente sensado en ppm. */
-static CO2_sensor_ppm_t mef_var_amb_CO2 = 600;
+static CO2_sensor_ppm_t mef_var_amb_CO2 = 500;
 /* Límite inferior de CO2 ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en ppm. */
 static CO2_sensor_ppm_t mef_var_amb_limite_inferior_CO2 = 400;
 /* Ancho de la ventana de histeresis de CO2 ambiente, posicionada alrededor de los límites del rango considerado como correcto, en ppm. */
-static CO2_sensor_ppm_t mef_var_amb_ancho_ventana_hist_CO2 = 50;
+static CO2_sensor_ppm_t mef_var_amb_ancho_ventana_hist_CO2 = 100;
 
 /* Bandera utilizada para controlar si se está o no en modo manual en el algoritmo de control de las variables ambientales. */
 static bool mef_var_amb_manual_mode_flag = 0;
