@@ -36,11 +36,11 @@ extern "C" {
 #define HUM_AMB_MQTT_TOPIC  "Sensores ambientales/Humedad"
 
 /* Código de error que se carga en el valor de temperatura al detectar un error de sensado. */
-#define CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB -300
+#define CODIGO_ERROR_SENSOR_DHT11_TEMP_AMB -5
 /* Código de error que se carga en el valor de humedad relativa al detectar un error de sensado. */
-#define CODIGO_ERROR_SENSOR_DHT11_HUM_AMB -400
+#define CODIGO_ERROR_SENSOR_DHT11_HUM_AMB -6
 /* Código de error que se carga en el valor de CO2 al detectar un error de sensado. */
-#define CODIGO_ERROR_SENSOR_CO2 -300
+#define CODIGO_ERROR_SENSOR_CO2 -5
 
 /* Cantidad de unidades secundarias presentes en el sistema. */
 #define AUX_CONTROL_VAR_AMB_CANT_UNIDADES_SECUNDARIAS 1
