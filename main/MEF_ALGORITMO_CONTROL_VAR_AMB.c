@@ -54,7 +54,7 @@ static DHT11_sensor_temp_t mef_var_amb_ancho_ventana_hist_temp = 1;
 static DHT11_sensor_temp_t mef_var_amb_delta_temp = 3;
 
 /* Variable donde se guarda el valor de la humedad relativa ambiente sensada en %. */
-static DHT11_sensor_hum_t mef_var_amb_hum = 0;
+static DHT11_sensor_hum_t mef_var_amb_hum = 10;
 /* Límite superior de humedad ambiente del rango considerado como correcto en el algoritmo de control de variables ambientes, en %. */
 static DHT11_sensor_hum_t mef_var_amb_limite_superior_hum =20;
 /* Ancho de la ventana de histeresis de humedad ambiente, posicionada alrededor de los límites del rango considerado como correcto, en %. */
