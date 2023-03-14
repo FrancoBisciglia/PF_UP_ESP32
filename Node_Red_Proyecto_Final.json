@@ -1,0 +1,5719 @@
+[
+    {
+        "id": "ea2e9f06d40d4bb3",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9683f30b532ac044",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "temp_amb",
+        "payloadType": "flow",
+        "x": 1540,
+        "y": 740,
+        "wires": [
+            [
+                "809689916a56f3dc"
+            ]
+        ]
+    },
+    {
+        "id": "a75f1eadae29adb0",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "5ab1eb6c3b185ddc",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura instantánea",
+        "label": "ºC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "15",
+        "seg2": "20",
+        "className": "",
+        "x": 1330,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "809689916a56f3dc",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "5ab1eb6c3b185ddc",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Temperatura vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1770,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fd764087a078f85c",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "temp_amb",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "49e7dede48442894",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Temperatura",
+        "tooltip": "",
+        "group": "98a5fe516f0b0088",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "NodeRed/Sensores ambientales/Temperatura/SP",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "1ca389505fc3d141"
+            ]
+        ]
+    },
+    {
+        "id": "bbcaf4afbd57045e",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 490,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "6436a96ae3abe503",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de nivel/Tanque principal",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 500,
+        "y": 1720,
+        "wires": [
+            [
+                "83afd7a8fdf0bb41"
+            ]
+        ]
+    },
+    {
+        "id": "7c99ff82e1e20c0a",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 1780,
+        "wires": [
+            [
+                "ba3b7f0474153fe5",
+                "88f3382d75dfac67"
+            ]
+        ]
+    },
+    {
+        "id": "2e91888361ecb03d",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "hum_amb",
+        "payloadType": "flow",
+        "x": 1540,
+        "y": 880,
+        "wires": [
+            [
+                "2d8a936cc3daf8cf"
+            ]
+        ]
+    },
+    {
+        "id": "b1e6300bbc6075ba",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "2496a1ac978c24a2",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Humedad instantánea",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "70",
+        "seg2": "80",
+        "className": "",
+        "x": 1320,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "2d8a936cc3daf8cf",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "2496a1ac978c24a2",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Humedad vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1760,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e033974a82c8876d",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "hum_amb",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0dfd5f0164836703",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "temp_sol",
+        "payloadType": "flow",
+        "x": 1540,
+        "y": 140,
+        "wires": [
+            [
+                "0d270a6482963567"
+            ]
+        ]
+    },
+    {
+        "id": "9a845819a6b49ec9",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "74bb29359e873d75",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura instantánea",
+        "label": "ºC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "15",
+        "seg2": "20",
+        "className": "",
+        "x": 1330,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "0d270a6482963567",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "74bb29359e873d75",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Temperatura vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1770,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d4d227aa4253301a",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "temp_sol",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "678ffd6a07a4ef6f",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Temperatura",
+        "tooltip": "",
+        "group": "34111383ee43c6f2",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "NodeRed/Sensores de la solucion/Temperatura/SP",
+        "sendOnBlur": false,
+        "className": "",
+        "topicType": "str",
+        "x": 90,
+        "y": 40,
+        "wires": [
+            [
+                "4f51c37d56bec9dd"
+            ]
+        ]
+    },
+    {
+        "id": "586690fd2d3f65f4",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "pH_sol",
+        "payloadType": "flow",
+        "x": 1530,
+        "y": 280,
+        "wires": [
+            [
+                "b9203e6c0303051f"
+            ]
+        ]
+    },
+    {
+        "id": "bd54736a426bc1dc",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "eca5509ec2ad8134",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "pH instantáneo",
+        "label": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "14",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "5,5",
+        "seg2": "7",
+        "className": "",
+        "x": 1300,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "b9203e6c0303051f",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "eca5509ec2ad8134",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "pH vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9c7d0e8e07f876ac",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "pH_sol",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1300,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6e73c07720bfc494",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "pH",
+        "tooltip": "",
+        "group": "34111383ee43c6f2",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "NodeRed/Sensores de la solucion/pH/SP",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 70,
+        "y": 80,
+        "wires": [
+            [
+                "d4407c05fad8a38f"
+            ]
+        ]
+    },
+    {
+        "id": "ddfdf25749530a2a",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "TDS_sol",
+        "payloadType": "flow",
+        "x": 1540,
+        "y": 420,
+        "wires": [
+            [
+                "b9ed29d915cc4669"
+            ]
+        ]
+    },
+    {
+        "id": "938d52a50611b064",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "d682acd03f84a522",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "TDS instantáneo",
+        "label": "ppm",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "2000",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "600",
+        "seg2": "1500",
+        "className": "",
+        "x": 1310,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "b9ed29d915cc4669",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "d682acd03f84a522",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "TDS vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "95b00b03aa118b45",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "TDS_sol",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cf98a3b6f26b8b3b",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "TDS",
+        "tooltip": "",
+        "group": "34111383ee43c6f2",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "NodeRed/Sensores de la solucion/TDS/SP",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 70,
+        "y": 120,
+        "wires": [
+            [
+                "c2465fd6490c4a3c"
+            ]
+        ]
+    },
+    {
+        "id": "1dbd274912bd47bf",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de nivel/Tanque acido",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 500,
+        "y": 1580,
+        "wires": [
+            [
+                "88947da8fef9a527"
+            ]
+        ]
+    },
+    {
+        "id": "49f731f59440e10d",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 1640,
+        "wires": [
+            [
+                "8e3b571315efc3a7",
+                "09206f5a862effee"
+            ]
+        ]
+    },
+    {
+        "id": "7ff7eba7424fa637",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de nivel/Tanque alcalino",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 500,
+        "y": 1440,
+        "wires": [
+            [
+                "7f56070b3bc1c26c"
+            ]
+        ]
+    },
+    {
+        "id": "8cc7f7f0f02b9f30",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 1500,
+        "wires": [
+            [
+                "f5877d1f72d19c31",
+                "e825d445d6eef3d7"
+            ]
+        ]
+    },
+    {
+        "id": "d143ce8bb0084acb",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de nivel/Tanque agua",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 500,
+        "y": 1300,
+        "wires": [
+            [
+                "2bf139b8f61c8dd8"
+            ]
+        ]
+    },
+    {
+        "id": "234eef2e9a1ad0b8",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 1360,
+        "wires": [
+            [
+                "87c91e9137e53b41",
+                "62eb8be3404385b0"
+            ]
+        ]
+    },
+    {
+        "id": "398029e52e11129b",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de nivel/Tanque sustrato",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 500,
+        "y": 1160,
+        "wires": [
+            [
+                "d9fc49436f641ed1"
+            ]
+        ]
+    },
+    {
+        "id": "7a4c9f75f5bcb6d7",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 1220,
+        "wires": [
+            [
+                "0d62ce45b5b16efb",
+                "50b7b9925cc8f12b"
+            ]
+        ]
+    },
+    {
+        "id": "77fe6c54a6d528d2",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores ambientales/Humedad",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 820,
+        "wires": [
+            [
+                "80a798c39ad53f3a",
+                "627b415686071708"
+            ]
+        ]
+    },
+    {
+        "id": "80a798c39ad53f3a",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 880,
+        "wires": [
+            [
+                "b1e6300bbc6075ba",
+                "e033974a82c8876d"
+            ]
+        ]
+    },
+    {
+        "id": "628c3c7a0882053f",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores ambientales/Temperatura",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 680,
+        "wires": [
+            [
+                "96d8c3e4eb9b79ed",
+                "3647d6ead1282172"
+            ]
+        ]
+    },
+    {
+        "id": "96d8c3e4eb9b79ed",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 740,
+        "wires": [
+            [
+                "a75f1eadae29adb0",
+                "fd764087a078f85c"
+            ]
+        ]
+    },
+    {
+        "id": "34b7a5e6edc3ed5c",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de la solucion/TDS",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 360,
+        "wires": [
+            [
+                "b495e6ce2ffc05cf",
+                "21c1caf227666b3c"
+            ]
+        ]
+    },
+    {
+        "id": "b495e6ce2ffc05cf",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 420,
+        "wires": [
+            [
+                "938d52a50611b064",
+                "95b00b03aa118b45"
+            ]
+        ]
+    },
+    {
+        "id": "e8cfb24c87c420f9",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de la solucion/pH",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 220,
+        "wires": [
+            [
+                "6b9890a05da7f69e",
+                "ac816e5291cf878d"
+            ]
+        ]
+    },
+    {
+        "id": "6b9890a05da7f69e",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 280,
+        "wires": [
+            [
+                "bd54736a426bc1dc",
+                "9c7d0e8e07f876ac"
+            ]
+        ]
+    },
+    {
+        "id": "67285abd7e6f4d82",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores de la solucion/Temperatura",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 80,
+        "wires": [
+            [
+                "412b299e4db3195b",
+                "8178c20d7bab1bb9"
+            ]
+        ]
+    },
+    {
+        "id": "412b299e4db3195b",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 140,
+        "wires": [
+            [
+                "9a845819a6b49ec9",
+                "d4d227aa4253301a"
+            ]
+        ]
+    },
+    {
+        "id": "ba3b7f0474153fe5",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "c24058dcd3c32bac",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Nivel instantáneo",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#010401",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "150",
+        "seg2": "250",
+        "className": "",
+        "x": 1310,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "8af95310b3fcd0a8",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "c24058dcd3c32bac",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "label": "Nivel vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Nivel 1",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#0000ff",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#f99795",
+            "#53287b",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 1780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88f3382d75dfac67",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dist",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4b50825304cfd3e7",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "dist",
+        "payloadType": "flow",
+        "x": 1520,
+        "y": 1780,
+        "wires": [
+            [
+                "8af95310b3fcd0a8"
+            ]
+        ]
+    },
+    {
+        "id": "09206f5a862effee",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "6c9cc92b761c341c",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Nivel instantáneo",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#010401",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "150",
+        "seg2": "250",
+        "className": "",
+        "x": 1310,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "f53dc4a034e6aa3f",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "6c9cc92b761c341c",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "label": "Nivel vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff0000",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 1640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8e3b571315efc3a7",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dist2",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "78c636e9a747ae1d",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "dist2",
+        "payloadType": "flow",
+        "x": 1530,
+        "y": 1640,
+        "wires": [
+            [
+                "f53dc4a034e6aa3f"
+            ]
+        ]
+    },
+    {
+        "id": "f5877d1f72d19c31",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "5c08593b9ac090e9",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Nivel instantáneo",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#010401",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "150",
+        "seg2": "250",
+        "className": "",
+        "x": 1310,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "8f8f7a1a4ab95cd5",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "5c08593b9ac090e9",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "label": "Nivel vs Tiempo ",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#00ff04",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 1500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e825d445d6eef3d7",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dist3",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "08123f881ed9f24d",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "dist3",
+        "payloadType": "flow",
+        "x": 1530,
+        "y": 1500,
+        "wires": [
+            [
+                "8f8f7a1a4ab95cd5"
+            ]
+        ]
+    },
+    {
+        "id": "62eb8be3404385b0",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "61df4f1c65196958",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Nivel instantáneo",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#010401",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "150",
+        "seg2": "250",
+        "className": "",
+        "x": 1310,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "feeb768a2a17d44d",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "61df4f1c65196958",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "label": "Nivel vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ffff00",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 1360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "87c91e9137e53b41",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dist4",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7c1d3fa7a9750724",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "dist4",
+        "payloadType": "flow",
+        "x": 1530,
+        "y": 1360,
+        "wires": [
+            [
+                "feeb768a2a17d44d"
+            ]
+        ]
+    },
+    {
+        "id": "0d62ce45b5b16efb",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "3226a40751650d4d",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Nivel instantáneao",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#010401",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "150",
+        "seg2": "250",
+        "className": "",
+        "x": 1310,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "1664228c2e097bbd",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "3226a40751650d4d",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "label": "Nivel vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff00ff",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "50b7b9925cc8f12b",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dist5",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "80bb8e0e77fa9937",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "dist5",
+        "payloadType": "flow",
+        "x": 1530,
+        "y": 1220,
+        "wires": [
+            [
+                "1664228c2e097bbd"
+            ]
+        ]
+    },
+    {
+        "id": "91b5e9b87d407806",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Sensores ambientales/CO2",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 540,
+        "wires": [
+            [
+                "c23e65570d287d9d",
+                "ede62211708f0768"
+            ]
+        ]
+    },
+    {
+        "id": "c23e65570d287d9d",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 600,
+        "wires": [
+            [
+                "d4cd19e3b70aaa9a",
+                "97cc9ae8847569b5"
+            ]
+        ]
+    },
+    {
+        "id": "2ed6a6417996b645",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "CO2_amb",
+        "payloadType": "flow",
+        "x": 1540,
+        "y": 600,
+        "wires": [
+            [
+                "77adb8f70fd387bf"
+            ]
+        ]
+    },
+    {
+        "id": "d4cd19e3b70aaa9a",
+        "type": "ui_gauge",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "eabadeb84cae4788",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "CO2 instantáneo",
+        "label": "ppm",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1500",
+        "colors": [
+            "#ff0000",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "700",
+        "seg2": "1000",
+        "className": "",
+        "x": 1310,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "77adb8f70fd387bf",
+        "type": "ui_chart",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "group": "eabadeb84cae4788",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "CO2 vs Tiempo",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "20",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#ff0000",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1740,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "97cc9ae8847569b5",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "CO2_amb",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b24817f49f240970",
+        "type": "node-red-contrib-whatsapp-cmb-send-message",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Whatsapp",
+        "account": "05cc6c0911fd7b44",
+        "text": "text",
+        "inputtypemessage": "msg",
+        "rejectssl": false,
+        "x": 1220,
+        "y": 1920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5a38fc7eb7c7b731",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8178c20d7bab1bb9",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `temperatura de la solución`(`Temperatura`, `Valor`) VALUES ('Temperatura de la solución',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 80,
+        "wires": [
+            [
+                "5a38fc7eb7c7b731"
+            ]
+        ]
+    },
+    {
+        "id": "ac816e5291cf878d",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `ph de la solución`(`pH de la solución`, `Valor`) VALUES ('pH de la solución',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 220,
+        "wires": [
+            [
+                "0a2ce757b966c1c9"
+            ]
+        ]
+    },
+    {
+        "id": "0a2ce757b966c1c9",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "21c1caf227666b3c",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `tds de la solución`(`TDS de la solución`, `Valor`) VALUES ('TDS de la solución',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 360,
+        "wires": [
+            [
+                "5a1af8457979cc37"
+            ]
+        ]
+    },
+    {
+        "id": "5a1af8457979cc37",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ede62211708f0768",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `co2 del ambiente`(`CO2 del ambiente`, `Valor`) VALUES ('CO2 del ambiente',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 540,
+        "wires": [
+            [
+                "169a3ef4f37976fc"
+            ]
+        ]
+    },
+    {
+        "id": "169a3ef4f37976fc",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f9fe426e083b7733",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3647d6ead1282172",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `temperatura del ambiente`(`Temperatura del ambiente`, `Valor`) VALUES ('Temperatura del ambiente',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 680,
+        "wires": [
+            [
+                "f9fe426e083b7733"
+            ]
+        ]
+    },
+    {
+        "id": "627b415686071708",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `humedad del ambiente`(`Humedad del ambiente`, `Valor`) VALUES ('Humedad del ambiente',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 820,
+        "wires": [
+            [
+                "4ef430fe6f19a8fb"
+            ]
+        ]
+    },
+    {
+        "id": "4ef430fe6f19a8fb",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3ee631cc02e013f5",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `nivel del tanque sustrato`(`Nivel del tanque sustrato`, `Valor`) VALUES ('Nivel del tanque sustrato',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1160,
+        "wires": [
+            [
+                "05cfed546f9fc4df"
+            ]
+        ]
+    },
+    {
+        "id": "05cfed546f9fc4df",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 1160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "503aca77b8679fc0",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `nivel del tanque agua`(`Nivel del tanque agua`, `Valor`) VALUES ('Nivel del tanque agua',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1300,
+        "wires": [
+            [
+                "c2f4e6772bd9305a"
+            ]
+        ]
+    },
+    {
+        "id": "c2f4e6772bd9305a",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 1300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "08874a1afd9026cc",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `nivel del tanque alcalino`(`Nivel del tanque alcalino`, `Valor`) VALUES ('Nivel del tanque alcalino',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1440,
+        "wires": [
+            [
+                "b89d08e24a7b92ae"
+            ]
+        ]
+    },
+    {
+        "id": "b89d08e24a7b92ae",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 1440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "58a03d15ebe47ab9",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `nivel del tanque ácido`(`Nivel del tanque ácido`, `Valor`) VALUES ('Nivel del tanque ácido',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1580,
+        "wires": [
+            [
+                "266130b328a37f64"
+            ]
+        ]
+    },
+    {
+        "id": "266130b328a37f64",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 1580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4bd8dbf865d0966e",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nmsg.topic = \"INSERT INTO `nivel del tanque principal`(`Nivel del tanque principal`, `Valor`) VALUES ('Nivel del tanque principal',\" + valor + \")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1720,
+        "wires": [
+            [
+                "76f9de9c5e904a00"
+            ]
+        ]
+    },
+    {
+        "id": "76f9de9c5e904a00",
+        "type": "mysql",
+        "z": "ea2e9f06d40d4bb3",
+        "mydb": "3b602919424ef8f0",
+        "name": "",
+        "x": 1040,
+        "y": 1720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "eafc7dfc337e75f5",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "if(msg.payload == 1){\n    msg.text = \"Alerta, desconexión del sensor de temperatura sumergible\";\n}\n\nif (msg.payload == 2) {\n    msg.text = \"Alerta, desconexión del sensor de pH\";\n}\n\nif (msg.payload == 3) {\n    msg.text = \"Alerta, desconexión del sensor de TDS\";\n}\n\nif (msg.payload == 4) {\n    msg.text = \"Alerta, desconexión del sensor de CO2\";\n}\n\nif (msg.payload == 5) {\n    msg.text = \"Alerta, desconexión del sensor de temperatura ambiente\";\n}\n\nif (msg.payload == 6) {\n    msg.text = \"Alerta, desconexión del sensor de humedad\";\n}\n\nif (msg.payload == 7) {\n    msg.text = \"Alerta, desconexión del sensor de nivel del tanque principal\";\n}\n\n\nif (msg.payload == 8) {\n    msg.text = \"Alerta, desconexión del sensor de nivel del tanque ácido\";\n}\n\n\nif (msg.payload == 9) {\n    msg.text = \"Alerta, desconexión del sensor de nivel del tanque alcalino\";\n}\n\n\nif (msg.payload == 10) {\n    msg.text = \"Alerta, desconexión del sensor de nivel del tanque agua\";\n}\n\n\nif (msg.payload == 11) {\n    msg.text = \"Alerta, desconexión del sensor de nivel del tanque sustrato\";\n}\n\n\nif (msg.payload == 12) {\n    msg.text = \"Alerta, no se detecta iluminación\";\n}\n\n\nif (msg.payload == 13) {\n    msg.text = \"Alerta, no se detecta flujo de solución nutritiva\";\n}\n\nif (msg.payload == 14) {\n    msg.text = \"Alerta, nivel del tanque principal bajo\";\n}\n\nif (msg.payload == 15) {\n    msg.text = \"Alerta, nivel del tanque ácido bajo\";\n}\n\nif (msg.payload == 16) {\n    msg.text = \"Alerta, nivel del tanque alcalino bajo\";\n}\n\nif (msg.payload == 17) {\n    msg.text = \"Alerta, nivel del tanque agua bajo\";\n}\n\nif (msg.payload == 18) {\n    msg.text = \"Alerta, nivel del tanque sustrato bajo\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 1920,
+        "wires": [
+            [
+                "b24817f49f240970"
+            ]
+        ]
+    },
+    {
+        "id": "533284099facfc11",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Alarmas",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 640,
+        "y": 1920,
+        "wires": [
+            [
+                "2429f24244c2b1ec"
+            ]
+        ]
+    },
+    {
+        "id": "2429f24244c2b1ec",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 1920,
+        "wires": [
+            [
+                "eafc7dfc337e75f5",
+                "83f465d0b858bd55"
+            ]
+        ]
+    },
+    {
+        "id": "5e6744872b0a79e8",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 1,
+        "group": "ed4d3876f3c4f2c4",
+        "width": 8,
+        "height": 2,
+        "label": "Bomba",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Bomba",
+        "x": 340,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "b75ac04b0ea72b7b",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Bomba",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 720,
+        "wires": [
+            [
+                "5e6744872b0a79e8"
+            ]
+        ]
+    },
+    {
+        "id": "90c95bd2a34401c3",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 1,
+        "group": "80e17aa79dabf573",
+        "width": 8,
+        "height": 2,
+        "label": "Luces",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Luces",
+        "x": 330,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "d9e441944e4d0eac",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 3,
+        "group": "80e17aa79dabf573",
+        "width": 8,
+        "height": 2,
+        "label": "Ventilador",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Cooler Aire",
+        "x": 350,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "64dc501af4c85375",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 3,
+        "group": "ed4d3876f3c4f2c4",
+        "width": 8,
+        "height": 2,
+        "label": "Refrigerador",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Cooler refrigeración solución",
+        "x": 400,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "8f01b2a577ebc8aa",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 2,
+        "group": "80e17aa79dabf573",
+        "width": 8,
+        "height": 2,
+        "label": "Calentador de aire",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Calefactor",
+        "x": 350,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "8326eb9e75042bf4",
+        "type": "ui_led",
+        "z": "ea2e9f06d40d4bb3",
+        "order": 2,
+        "group": "ed4d3876f3c4f2c4",
+        "width": 8,
+        "height": 2,
+        "label": "Calentador de la solución",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#808080",
+                "value": "OFF",
+                "valueType": "str"
+            },
+            {
+                "color": "#008000",
+                "value": "ON",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "Calentador solución",
+        "x": 380,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "5e33ef5a9a3e6585",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Luces",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 760,
+        "wires": [
+            [
+                "90c95bd2a34401c3"
+            ]
+        ]
+    },
+    {
+        "id": "3463dd0d95cf5d4c",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Ventiladores",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 800,
+        "wires": [
+            [
+                "d9e441944e4d0eac"
+            ]
+        ]
+    },
+    {
+        "id": "22c67bd34d963bd1",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Refrigerador",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 840,
+        "wires": [
+            [
+                "64dc501af4c85375"
+            ]
+        ]
+    },
+    {
+        "id": "8d23a2a21479d495",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Calefaccion",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 880,
+        "wires": [
+            [
+                "8f01b2a577ebc8aa"
+            ]
+        ]
+    },
+    {
+        "id": "94ae7a81628261fb",
+        "type": "mqtt in",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "suscriptor MQTT",
+        "topic": "Actuadores/Calefactor",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3441fc8a4d625173",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 920,
+        "wires": [
+            [
+                "8326eb9e75042bf4"
+            ]
+        ]
+    },
+    {
+        "id": "1e6b93689f2ba8d9",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tiempo ON bomba",
+        "tooltip": "",
+        "group": "35d27401552e5408",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Tiempos/Bomba/Tiempo_encendido",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "21463ddb3b4e7243"
+            ]
+        ]
+    },
+    {
+        "id": "8e42bf397e1775ec",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tiempo OFF bomba",
+        "tooltip": "",
+        "group": "35d27401552e5408",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Tiempos/Bomba/Tiempo_apagado",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 120,
+        "y": 280,
+        "wires": [
+            [
+                "b4b7d74ff221d715"
+            ]
+        ]
+    },
+    {
+        "id": "6476b3d56e31ee21",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Bomba M",
+        "group": "661d91bb3b773d21",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 100,
+        "y": 2080,
+        "wires": [
+            [
+                "c5e580703b50431f",
+                "09764f84e8520c03"
+            ]
+        ]
+    },
+    {
+        "id": "c5e580703b50431f",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\nmsg.topic = \"/BombeoSoluc/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/BombeoSoluc/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 2140,
+        "wires": [
+            [
+                "49ea86339c6d81cf"
+            ]
+        ]
+    },
+    {
+        "id": "32e7c41c2213ede7",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Bomba A",
+        "group": "661d91bb3b773d21",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 100,
+        "y": 2120,
+        "wires": [
+            [
+                "c5e580703b50431f",
+                "09764f84e8520c03"
+            ]
+        ]
+    },
+    {
+        "id": "ab8f986e2b7f4d11",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "pH M",
+        "group": "b221afd18bf34ff9",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 70,
+        "y": 2300,
+        "wires": [
+            [
+                "26f2ee7c73566bef",
+                "90bb3956a0de21e4"
+            ]
+        ]
+    },
+    {
+        "id": "26f2ee7c73566bef",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/PhSoluc/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/PhSoluc/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 2380,
+        "wires": [
+            [
+                "2c431c44bdb4b94c"
+            ]
+        ]
+    },
+    {
+        "id": "af8e73fc614ee0e3",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "pH A",
+        "group": "b221afd18bf34ff9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 70,
+        "y": 2340,
+        "wires": [
+            [
+                "26f2ee7c73566bef",
+                "90bb3956a0de21e4"
+            ]
+        ]
+    },
+    {
+        "id": "40a458acf1af3ba5",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "TDS M",
+        "group": "cba6aa9d306b832d",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 80,
+        "y": 2540,
+        "wires": [
+            [
+                "fe4c2c524c51f883",
+                "062f5e5750b87e10"
+            ]
+        ]
+    },
+    {
+        "id": "fe4c2c524c51f883",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TdsSoluc/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/TdsSoluc/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 2620,
+        "wires": [
+            [
+                "6d448acb084d1ec2"
+            ]
+        ]
+    },
+    {
+        "id": "847e328cc166eaf0",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "TDS A",
+        "group": "cba6aa9d306b832d",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 70,
+        "y": 2580,
+        "wires": [
+            [
+                "fe4c2c524c51f883",
+                "062f5e5750b87e10"
+            ]
+        ]
+    },
+    {
+        "id": "0b220598e5d784f3",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Temp M",
+        "group": "4da47070796fef44",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 80,
+        "y": 2780,
+        "wires": [
+            [
+                "0a0991251c821b08",
+                "26bc49f389f193f6"
+            ]
+        ]
+    },
+    {
+        "id": "0a0991251c821b08",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TempSoluc/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/TempSoluc/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 2860,
+        "wires": [
+            [
+                "05431b8dae448cd4"
+            ]
+        ]
+    },
+    {
+        "id": "e7f7e9e1acc86132",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Temp A",
+        "group": "4da47070796fef44",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 80,
+        "y": 2820,
+        "wires": [
+            [
+                "0a0991251c821b08",
+                "26bc49f389f193f6"
+            ]
+        ]
+    },
+    {
+        "id": "05431b8dae448cd4",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 530,
+        "y": 2860,
+        "wires": []
+    },
+    {
+        "id": "09764f84e8520c03",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 300,
+        "y": 2060,
+        "wires": [
+            [
+                "f67cfe558b400f2c",
+                "9d3320b66cc0481c"
+            ]
+        ]
+    },
+    {
+        "id": "f67cfe558b400f2c",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender bomba",
+        "group": "661d91bb3b773d21",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender bomba",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 510,
+        "y": 2040,
+        "wires": [
+            [
+                "83aad95fe31b1a04"
+            ]
+        ]
+    },
+    {
+        "id": "9d3320b66cc0481c",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar bomba",
+        "group": "661d91bb3b773d21",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar Bomba",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 504,
+        "y": 2095,
+        "wires": [
+            [
+                "83aad95fe31b1a04"
+            ]
+        ]
+    },
+    {
+        "id": "90bb3956a0de21e4",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 2280,
+        "wires": [
+            [
+                "1d8270ec24e206df",
+                "fe76586c0ca0fd8c",
+                "2601b8960f149928",
+                "72e10894d293a82f"
+            ]
+        ]
+    },
+    {
+        "id": "1d8270ec24e206df",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Abrir válvula tanque ácido",
+        "group": "b221afd18bf34ff9",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Abrir válvula tanque ácido",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 530,
+        "y": 2220,
+        "wires": [
+            [
+                "2729467f308bb9d9"
+            ]
+        ]
+    },
+    {
+        "id": "fe76586c0ca0fd8c",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Cerrar válvula tanque ácido",
+        "group": "b221afd18bf34ff9",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Cerrar válvula tanque ácido",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 540,
+        "y": 2260,
+        "wires": [
+            [
+                "2729467f308bb9d9"
+            ]
+        ]
+    },
+    {
+        "id": "2601b8960f149928",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Abrir válvula tanque alcalino",
+        "group": "b221afd18bf34ff9",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Abrir válvula tanque alcalino",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "str",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 540,
+        "y": 2300,
+        "wires": [
+            [
+                "2be543fb40952e76"
+            ]
+        ]
+    },
+    {
+        "id": "72e10894d293a82f",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Cerrar válvula tanque alcalino",
+        "group": "b221afd18bf34ff9",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Cerrar válvula tanque alcalino",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 550,
+        "y": 2340,
+        "wires": [
+            [
+                "2be543fb40952e76"
+            ]
+        ]
+    },
+    {
+        "id": "062f5e5750b87e10",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 2520,
+        "wires": [
+            [
+                "bdb088b3fbdc2a18",
+                "8b614de80ee13bda",
+                "ee9c0e49520b7224",
+                "5b4c30008c031eab"
+            ]
+        ]
+    },
+    {
+        "id": "bdb088b3fbdc2a18",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Abrir válvula tanque agua",
+        "group": "cba6aa9d306b832d",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Abrir válvula tanque agua",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 530,
+        "y": 2460,
+        "wires": [
+            [
+                "accfb97ede4e7211"
+            ]
+        ]
+    },
+    {
+        "id": "8b614de80ee13bda",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Cerrar válvula tanque agua",
+        "group": "cba6aa9d306b832d",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Cerrar válvula tanque agua",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 540,
+        "y": 2500,
+        "wires": [
+            [
+                "accfb97ede4e7211"
+            ]
+        ]
+    },
+    {
+        "id": "ee9c0e49520b7224",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Abrir válvula tanque sustrato",
+        "group": "cba6aa9d306b832d",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Abrir válvula tanque sustrato",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 540,
+        "y": 2540,
+        "wires": [
+            [
+                "391ea4064911a86c"
+            ]
+        ]
+    },
+    {
+        "id": "5b4c30008c031eab",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Cerrar válvula tanque sustrato",
+        "group": "cba6aa9d306b832d",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Cerrar válvula tanque sustrato",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 550,
+        "y": 2580,
+        "wires": [
+            [
+                "391ea4064911a86c"
+            ]
+        ]
+    },
+    {
+        "id": "26bc49f389f193f6",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 2760,
+        "wires": [
+            [
+                "d917a40e70840cf6",
+                "1b24294f523cbc26",
+                "baf8ddc4a440e4f1",
+                "78994efd4ec7bfec"
+            ]
+        ]
+    },
+    {
+        "id": "d917a40e70840cf6",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender refrigerador",
+        "group": "4da47070796fef44",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender refrigerador",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 540,
+        "y": 2700,
+        "wires": [
+            [
+                "b289a3c76f7e6fe2"
+            ]
+        ]
+    },
+    {
+        "id": "1b24294f523cbc26",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar refrigerador",
+        "group": "4da47070796fef44",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar refrigerador",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 530,
+        "y": 2740,
+        "wires": [
+            [
+                "b289a3c76f7e6fe2"
+            ]
+        ]
+    },
+    {
+        "id": "baf8ddc4a440e4f1",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender calentador de solución",
+        "group": "4da47070796fef44",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender calentador de solución",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 580,
+        "y": 2780,
+        "wires": [
+            [
+                "683b39fe988a3854"
+            ]
+        ]
+    },
+    {
+        "id": "78994efd4ec7bfec",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar calentador de solución",
+        "group": "4da47070796fef44",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar calentador de solución",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 570,
+        "y": 2820,
+        "wires": [
+            [
+                "683b39fe988a3854"
+            ]
+        ]
+    },
+    {
+        "id": "49ea86339c6d81cf",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 510,
+        "y": 2140,
+        "wires": []
+    },
+    {
+        "id": "83aad95fe31b1a04",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/BombeoSoluc/Modo_Manual/Bomba\";\n    msg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/BombeoSoluc/Modo_Manual/Bomba\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 2080,
+        "wires": [
+            [
+                "831fb4c1cab6d335"
+            ]
+        ]
+    },
+    {
+        "id": "831fb4c1cab6d335",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 890,
+        "y": 2080,
+        "wires": []
+    },
+    {
+        "id": "2c431c44bdb4b94c",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 510,
+        "y": 2380,
+        "wires": []
+    },
+    {
+        "id": "2729467f308bb9d9",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/PhSoluc/Modo_Manual/Valvula_dism_ph\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/PhSoluc/Modo_Manual/Valvula_dism_ph\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 2240,
+        "wires": [
+            [
+                "010704eb90b9efaa"
+            ]
+        ]
+    },
+    {
+        "id": "2be543fb40952e76",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/PhSoluc/Modo_Manual/Valvula_aum_ph\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/PhSoluc/Modo_Manual/Valvula_aum_ph\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 2320,
+        "wires": [
+            [
+                "010704eb90b9efaa"
+            ]
+        ]
+    },
+    {
+        "id": "010704eb90b9efaa",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 970,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "6d448acb084d1ec2",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 510,
+        "y": 2620,
+        "wires": []
+    },
+    {
+        "id": "accfb97ede4e7211",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TdsSoluc/Modo_Manual/Valvula_dism_tds\";\nmsg.payload = \"0\";\n}\nelse {\n    msg.topic = \"/TdsSoluc/Modo_Manual/Valvula_dism_tds\";\n    msg.payload = \"1\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 2460,
+        "wires": [
+            [
+                "bc544621b2a5704f"
+            ]
+        ]
+    },
+    {
+        "id": "391ea4064911a86c",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TdsSoluc/Modo_Manual/Valvula_aum_tds\";\nmsg.payload = \"0\";\n}\nelse {\n    msg.topic = \"/TdsSoluc/Modo_Manual/Valvula_aum_tds\";\n    msg.payload = \"1\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 2560,
+        "wires": [
+            [
+                "bc544621b2a5704f"
+            ]
+        ]
+    },
+    {
+        "id": "bc544621b2a5704f",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 970,
+        "y": 2500,
+        "wires": []
+    },
+    {
+        "id": "b289a3c76f7e6fe2",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TempSoluc/Modo_Manual/Refrigerador\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/TempSoluc/Modo_Manual/Refrigerador\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 2720,
+        "wires": [
+            [
+                "7f146cee3ee5d182"
+            ]
+        ]
+    },
+    {
+        "id": "683b39fe988a3854",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/TempSoluc/Modo_Manual/Calefactor\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/TempSoluc/Modo_Manual/Calefactor\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 2800,
+        "wires": [
+            [
+                "7f146cee3ee5d182"
+            ]
+        ]
+    },
+    {
+        "id": "7f146cee3ee5d182",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 1010,
+        "y": 2740,
+        "wires": []
+    },
+    {
+        "id": "22952328006d89d1",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Temp aire M",
+        "group": "9499b41736c0c729",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 90,
+        "y": 3020,
+        "wires": [
+            [
+                "ee8b75dafea01c75",
+                "66363705d48e4af5"
+            ]
+        ]
+    },
+    {
+        "id": "ee8b75dafea01c75",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/VarAmb/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/VarAmb/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 3100,
+        "wires": [
+            [
+                "5859bb29ca325c8e"
+            ]
+        ]
+    },
+    {
+        "id": "7e55e5c22d660704",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Temp aire A",
+        "group": "9499b41736c0c729",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 90,
+        "y": 3060,
+        "wires": [
+            [
+                "ee8b75dafea01c75",
+                "66363705d48e4af5"
+            ]
+        ]
+    },
+    {
+        "id": "5859bb29ca325c8e",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 530,
+        "y": 3100,
+        "wires": []
+    },
+    {
+        "id": "66363705d48e4af5",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 3000,
+        "wires": [
+            [
+                "af65efb6b55091a8",
+                "10d532cb270fe6c1",
+                "2ed61c1f9ca61dea",
+                "c0134948fdd50cea"
+            ]
+        ]
+    },
+    {
+        "id": "af65efb6b55091a8",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender extractor",
+        "group": "9499b41736c0c729",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender extractor",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 530,
+        "y": 2940,
+        "wires": [
+            [
+                "216b4479482856c9"
+            ]
+        ]
+    },
+    {
+        "id": "10d532cb270fe6c1",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar extractor",
+        "group": "9499b41736c0c729",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar extractor",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 530,
+        "y": 2980,
+        "wires": [
+            [
+                "216b4479482856c9"
+            ]
+        ]
+    },
+    {
+        "id": "2ed61c1f9ca61dea",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender calentador de aire",
+        "group": "9499b41736c0c729",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender calentador de aire",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 560,
+        "y": 3020,
+        "wires": [
+            [
+                "3f6413927da269f9"
+            ]
+        ]
+    },
+    {
+        "id": "c0134948fdd50cea",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar calentador de aire",
+        "group": "9499b41736c0c729",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar calentador de aire",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 550,
+        "y": 3060,
+        "wires": [
+            [
+                "3f6413927da269f9"
+            ]
+        ]
+    },
+    {
+        "id": "216b4479482856c9",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/VarAmb/Modo_Manual/Ventiladores\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/VarAmb/Modo_Manual/Ventiladores\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 2960,
+        "wires": [
+            [
+                "627093b11eb48aab"
+            ]
+        ]
+    },
+    {
+        "id": "3f6413927da269f9",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/VarAmb/Modo_Manual/Calefaccion\";\nmsg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/VarAmb/Modo_Manual/Calefaccion\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 3040,
+        "wires": [
+            [
+                "627093b11eb48aab"
+            ]
+        ]
+    },
+    {
+        "id": "627093b11eb48aab",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 990,
+        "y": 2980,
+        "wires": []
+    },
+    {
+        "id": "e0b1c1684d4dd5b9",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Luz M",
+        "group": "0dbde342692cc15e",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Manual",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 70,
+        "y": 3220,
+        "wires": [
+            [
+                "78ed850856399653",
+                "f617d9d64ad454e7"
+            ]
+        ]
+    },
+    {
+        "id": "78ed850856399653",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/Luces/Modo\";\nmsg.payload = \"MANUAL\";\n}\nelse {\n    msg.topic = \"/Luces/Modo\";\n    msg.payload = \"AUTO\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 3280,
+        "wires": [
+            [
+                "dd239960845aa63d"
+            ]
+        ]
+    },
+    {
+        "id": "3b044728840de298",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Luz A",
+        "group": "0dbde342692cc15e",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Automático",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 70,
+        "y": 3260,
+        "wires": [
+            [
+                "78ed850856399653",
+                "f617d9d64ad454e7"
+            ]
+        ]
+    },
+    {
+        "id": "f617d9d64ad454e7",
+        "type": "change",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "enabled",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 3200,
+        "wires": [
+            [
+                "3533fe1da983653d",
+                "9730251ec7ca9498"
+            ]
+        ]
+    },
+    {
+        "id": "3533fe1da983653d",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Encender luces",
+        "group": "0dbde342692cc15e",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Encender luces",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "1",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 480,
+        "y": 3180,
+        "wires": [
+            [
+                "b12e0154fafb8c3d"
+            ]
+        ]
+    },
+    {
+        "id": "9730251ec7ca9498",
+        "type": "ui_button",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "Apagar luces",
+        "group": "0dbde342692cc15e",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Apagar luces",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "0",
+        "payloadType": "num",
+        "topic": "payload",
+        "topicType": "msg",
+        "x": 474,
+        "y": 3235,
+        "wires": [
+            [
+                "b12e0154fafb8c3d"
+            ]
+        ]
+    },
+    {
+        "id": "dd239960845aa63d",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 490,
+        "y": 3280,
+        "wires": []
+    },
+    {
+        "id": "b12e0154fafb8c3d",
+        "type": "function",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "function",
+        "func": "var valor = msg.payload;\nif (valor == 1){\n    msg.topic = \"/Luces/Modo_Manual/Luces\";\n    msg.payload = \"1\";\n}\nelse {\n    msg.topic = \"/Luces/Modo_Manual/Luces\";\n    msg.payload = \"0\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 3220,
+        "wires": [
+            [
+                "780e6d92af0bc40b"
+            ]
+        ]
+    },
+    {
+        "id": "780e6d92af0bc40b",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 870,
+        "y": 3220,
+        "wires": []
+    },
+    {
+        "id": "4f51c37d56bec9dd",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "15",
+                "vt": "num",
+                "v2": "30",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 230,
+        "y": 40,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "d4407c05fad8a38f",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "5.5",
+                "vt": "num",
+                "v2": "7",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "c2465fd6490c4a3c",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "600",
+                "vt": "num",
+                "v2": "1500",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 195,
+        "y": 120,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "1ca389505fc3d141",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "10",
+                "vt": "num",
+                "v2": "35",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 230,
+        "y": 180,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "21463ddb3b4e7243",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "1",
+                "vt": "num",
+                "v2": "20",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "b4b7d74ff221d715",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "1",
+                "vt": "num",
+                "v2": "20",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 290,
+        "y": 280,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "6dc7df5b97c2300e",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tiempo ON luces",
+        "tooltip": "",
+        "group": "35d27401552e5408",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Tiempos/Luces/Tiempo_encendido",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 320,
+        "wires": [
+            [
+                "8e24df9f7824463e"
+            ]
+        ]
+    },
+    {
+        "id": "8e24df9f7824463e",
+        "type": "switch",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "1",
+                "vt": "num",
+                "v2": "20",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 270,
+        "y": 320,
+        "wires": [
+            [
+                "bbcaf4afbd57045e"
+            ]
+        ]
+    },
+    {
+        "id": "18bdf21d72eb0627",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tanque principal ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorNivel/TanquePrincipal",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 150,
+        "y": 3740,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "d87f35e64007c9d1",
+        "type": "mqtt out",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "publicador MQTT",
+        "topic": "",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3441fc8a4d625173",
+        "x": 610,
+        "y": 3940,
+        "wires": []
+    },
+    {
+        "id": "13068a24e7d1e4d6",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Temperatura solución ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/Temp",
+        "sendOnBlur": false,
+        "className": "",
+        "topicType": "str",
+        "x": 160,
+        "y": 3600,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "90c415f11cdbe677",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "pH ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/pH",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 3640,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "add30621519769fd",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "TDS ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/TDS",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 3680,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "c3c0701583d220e6",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Flujo ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorFlujo",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 3960,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "1fe59ac843d142d2",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Luz ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Actuadores/Luces",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 4000,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "a135f164a72dd671",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "CO2 Ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "Sensores ambientales/CO2",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 110,
+        "y": 4080,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "0fdd6a660aee3e01",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tanque acido ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorNivel/TanqueAcido",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 3780,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "6dc05686af7aea55",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tanque alcalino ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorNivel/TanqueAlcalino",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 150,
+        "y": 3820,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "47a767a89e1697f2",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tanque agua ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorNivel/TanqueAgua",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 3860,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "4fb68b2fd61732de",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Tanque sustrato ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "/Ensayo/SensorNivel/TanqueSustrato",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 150,
+        "y": 3900,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "3ee8ffbf6ec6c447",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Temperatura ambiente ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 13,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "Sensores ambientales/Temperatura",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 170,
+        "y": 4160,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "664fea12854bc158",
+        "type": "ui_text_input",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "label": "Humedad ensayo",
+        "tooltip": "",
+        "group": "3a525703254e3052",
+        "order": 15,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "Sensores ambientales/Humedad",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 130,
+        "y": 4240,
+        "wires": [
+            [
+                "d87f35e64007c9d1"
+            ]
+        ]
+    },
+    {
+        "id": "606b3050c91b5962",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "Actuadores/Bomba",
+        "payload": "OFF",
+        "payloadType": "str",
+        "x": 150,
+        "y": 660,
+        "wires": [
+            [
+                "5e6744872b0a79e8"
+            ]
+        ]
+    },
+    {
+        "id": "716f81dc93e9fa53",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "Actuadores/Bomba",
+        "payload": "ON",
+        "payloadType": "str",
+        "x": 140,
+        "y": 620,
+        "wires": [
+            [
+                "5e6744872b0a79e8"
+            ]
+        ]
+    },
+    {
+        "id": "a63a1d6b10eabec1",
+        "type": "inject",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "Sensores de nivel/Tanque alcalino",
+        "payload": "0.03",
+        "payloadType": "str",
+        "x": 490,
+        "y": 1520,
+        "wires": [
+            [
+                "7f56070b3bc1c26c"
+            ]
+        ]
+    },
+    {
+        "id": "c9f72ffd88b1073c",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "f64e1746b0939df3",
+        "order": 1,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto de la temperatura ambiente es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1430,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "6206c112324ac11c",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "594ed0b2b3e2c232",
+        "order": 1,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto de la temperatura de la solución es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1450,
+        "y": 2080,
+        "wires": []
+    },
+    {
+        "id": "70dee107dca7b849",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "594ed0b2b3e2c232",
+        "order": 2,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto del pH es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1370,
+        "y": 2120,
+        "wires": []
+    },
+    {
+        "id": "fadbaeede21e4073",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "594ed0b2b3e2c232",
+        "order": 3,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto del TDS es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1370,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "f541fa8bf301de35",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "15628e565c8afa56",
+        "order": 1,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto del tiempo ON de la bomba es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1430,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "a7e2d32abe2179e0",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "15628e565c8afa56",
+        "order": 2,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto del tiempo OFF de la bomba es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1440,
+        "y": 2240,
+        "wires": []
+    },
+    {
+        "id": "7f1111c214a9d1cd",
+        "type": "ui_text",
+        "z": "ea2e9f06d40d4bb3",
+        "group": "15628e565c8afa56",
+        "order": 2,
+        "width": 6,
+        "height": "1",
+        "name": "",
+        "label": "El Set point por defecto del tiempo ON de las luces es 25",
+        "format": "",
+        "layout": "row-left",
+        "className": "",
+        "x": 1430,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "7f56070b3bc1c26c",
+        "type": "calculator",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "inputMsgField": "payload",
+        "outputMsgField": "payload",
+        "operation": "mult",
+        "constant": "100",
+        "round": false,
+        "decimals": 0,
+        "x": 680,
+        "y": 1440,
+        "wires": [
+            [
+                "08874a1afd9026cc",
+                "8cc7f7f0f02b9f30"
+            ]
+        ]
+    },
+    {
+        "id": "88947da8fef9a527",
+        "type": "calculator",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "inputMsgField": "payload",
+        "outputMsgField": "payload",
+        "operation": "mult",
+        "constant": "100",
+        "round": false,
+        "decimals": 0,
+        "x": 680,
+        "y": 1580,
+        "wires": [
+            [
+                "58a03d15ebe47ab9",
+                "49f731f59440e10d"
+            ]
+        ]
+    },
+    {
+        "id": "83afd7a8fdf0bb41",
+        "type": "calculator",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "inputMsgField": "payload",
+        "outputMsgField": "payload",
+        "operation": "mult",
+        "constant": "100",
+        "round": false,
+        "decimals": 0,
+        "x": 680,
+        "y": 1720,
+        "wires": [
+            [
+                "4bd8dbf865d0966e",
+                "7c99ff82e1e20c0a"
+            ]
+        ]
+    },
+    {
+        "id": "2bf139b8f61c8dd8",
+        "type": "calculator",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "inputMsgField": "payload",
+        "outputMsgField": "payload",
+        "operation": "mult",
+        "constant": "100",
+        "round": false,
+        "decimals": 0,
+        "x": 680,
+        "y": 1300,
+        "wires": [
+            [
+                "503aca77b8679fc0",
+                "234eef2e9a1ad0b8"
+            ]
+        ]
+    },
+    {
+        "id": "d9fc49436f641ed1",
+        "type": "calculator",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "",
+        "inputMsgField": "payload",
+        "outputMsgField": "payload",
+        "operation": "mult",
+        "constant": "100",
+        "round": false,
+        "decimals": 0,
+        "x": 680,
+        "y": 1160,
+        "wires": [
+            [
+                "3ee631cc02e013f5",
+                "7a4c9f75f5bcb6d7"
+            ]
+        ]
+    },
+    {
+        "id": "83f465d0b858bd55",
+        "type": "debug",
+        "z": "ea2e9f06d40d4bb3",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "5ab1eb6c3b185ddc",
+        "type": "ui_group",
+        "name": "Temperatura del ambiente",
+        "tab": "f7a5e533d5db68a8",
+        "order": 2,
+        "disp": true,
+        "width": "5",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "98a5fe516f0b0088",
+        "type": "ui_group",
+        "name": "Set points",
+        "tab": "f7a5e533d5db68a8",
+        "order": 5,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3441fc8a4d625173",
+        "type": "mqtt-broker",
+        "name": "Mosquitto",
+        "broker": "192.168.201.173",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "mensaje/birth",
+        "birthQos": "0",
+        "birthPayload": "1",
+        "birthMsg": {},
+        "closeTopic": "mensaje/close",
+        "closeQos": "0",
+        "closePayload": "1",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2496a1ac978c24a2",
+        "type": "ui_group",
+        "name": "Humedad del ambiente",
+        "tab": "f7a5e533d5db68a8",
+        "order": 3,
+        "disp": true,
+        "width": "5",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "74bb29359e873d75",
+        "type": "ui_group",
+        "name": "Temperatura de la solución",
+        "tab": "ee8f71059174ca3c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "34111383ee43c6f2",
+        "type": "ui_group",
+        "name": "Set points",
+        "tab": "ee8f71059174ca3c",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "eca5509ec2ad8134",
+        "type": "ui_group",
+        "name": "pH de la solución",
+        "tab": "ee8f71059174ca3c",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "d682acd03f84a522",
+        "type": "ui_group",
+        "name": "TDS de la solución",
+        "tab": "ee8f71059174ca3c",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "c24058dcd3c32bac",
+        "type": "ui_group",
+        "name": "Nivel tanque Principal",
+        "tab": "4ef6f40868fa4b6d",
+        "order": 1,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6c9cc92b761c341c",
+        "type": "ui_group",
+        "name": "Nivel tanque Ácido",
+        "tab": "4ef6f40868fa4b6d",
+        "order": 2,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5c08593b9ac090e9",
+        "type": "ui_group",
+        "name": "Nivel tanque Alcalino",
+        "tab": "4ef6f40868fa4b6d",
+        "order": 3,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "61df4f1c65196958",
+        "type": "ui_group",
+        "name": "Nivel tanque Agua",
+        "tab": "4ef6f40868fa4b6d",
+        "order": 4,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3226a40751650d4d",
+        "type": "ui_group",
+        "name": "Nivel tanque Sustrato",
+        "tab": "4ef6f40868fa4b6d",
+        "order": 5,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "eabadeb84cae4788",
+        "type": "ui_group",
+        "name": "CO2",
+        "tab": "f7a5e533d5db68a8",
+        "order": 4,
+        "disp": true,
+        "width": "5",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "05cc6c0911fd7b44",
+        "type": "node-red-contrib-whatsapp-cmb-account",
+        "name": "David"
+    },
+    {
+        "id": "3b602919424ef8f0",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "sistema hidropónico",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "ed4d3876f3c4f2c4",
+        "type": "ui_group",
+        "name": "Actuadores de la solución",
+        "tab": "06a025f45b286fd1",
+        "order": 2,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "80e17aa79dabf573",
+        "type": "ui_group",
+        "name": "Actuadores ambientales",
+        "tab": "06a025f45b286fd1",
+        "order": 1,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "35d27401552e5408",
+        "type": "ui_group",
+        "name": "Set points",
+        "tab": "06a025f45b286fd1",
+        "order": 3,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "661d91bb3b773d21",
+        "type": "ui_group",
+        "name": "Bomba",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 1,
+        "disp": true,
+        "width": 3,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b221afd18bf34ff9",
+        "type": "ui_group",
+        "name": "Control de pH",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 2,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cba6aa9d306b832d",
+        "type": "ui_group",
+        "name": "Control de TDS",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 3,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4da47070796fef44",
+        "type": "ui_group",
+        "name": "Temperatura de la solución",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 4,
+        "disp": true,
+        "width": "5",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "9499b41736c0c729",
+        "type": "ui_group",
+        "name": "Temperatura ambiente",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 5,
+        "disp": true,
+        "width": "5",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0dbde342692cc15e",
+        "type": "ui_group",
+        "name": "Luz",
+        "tab": "aff1bcdc96d9d8bd",
+        "order": 6,
+        "disp": true,
+        "width": 3,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3a525703254e3052",
+        "type": "ui_group",
+        "name": "Pruebas",
+        "tab": "03ba88710606e605",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f64e1746b0939df3",
+        "type": "ui_group",
+        "name": "Notas",
+        "tab": "f7a5e533d5db68a8",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "594ed0b2b3e2c232",
+        "type": "ui_group",
+        "name": "Notas",
+        "tab": "ee8f71059174ca3c",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "15628e565c8afa56",
+        "type": "ui_group",
+        "name": "Notas",
+        "tab": "06a025f45b286fd1",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f7a5e533d5db68a8",
+        "type": "ui_tab",
+        "name": "Sensores ambientales",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ee8f71059174ca3c",
+        "type": "ui_tab",
+        "name": "Sensores de la solución",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "4ef6f40868fa4b6d",
+        "type": "ui_tab",
+        "name": "Sensores de nivel",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "06a025f45b286fd1",
+        "type": "ui_tab",
+        "name": "Actuadores",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "aff1bcdc96d9d8bd",
+        "type": "ui_tab",
+        "name": "Modos de funcionamiento",
+        "icon": "dashboard",
+        "order": 5,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "03ba88710606e605",
+        "type": "ui_tab",
+        "name": "Pruebas",
+        "icon": "dashboard",
+        "order": 6,
+        "disabled": false,
+        "hidden": false
+    }
+]
