@@ -28,14 +28,9 @@ void app_main(void)
 {
     //=======================| CONEXION WIFI |=======================//
 
-    // wifi_network_t network = {
-    //     .ssid = "Claro2021",
-    //     .pass = "Lavalle1402abcd",
-    // };
-
     wifi_network_t network = {
-        .ssid = "MOVISTAR WIFI4196",
-        .pass = "yoot7267",
+        .ssid = "xxxxxx",
+        .pass = "xxxxxx",
     };
 
     connect_wifi(&network);
